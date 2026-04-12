@@ -12,6 +12,11 @@ import java.util.List;
 @Controller
 public class EventController {
 
+    @GetMapping("/")
+    public String home() {
+        return "redirect:/events";
+    }
+
     @GetMapping("/events")
     public String listEvents(Model model) {
         EventDAO eventDAO = new EventDAO();
