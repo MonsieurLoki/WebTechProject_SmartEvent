@@ -35,7 +35,7 @@ public class EventDAO {
         System.out.println("Events found: " + events.size());
         return events;
     }
-    
+
     public Event getEventById(int id) {
         String sql = "SELECT * FROM events WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
@@ -59,5 +59,26 @@ public class EventDAO {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public boolean save(Event event) {
+        String sql = "INSERT INTO events (title, description, date_time, location, capacity, price, is_virtual, organizer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            Class.forName("org.postgresql.Driver");
+            stmt.setString(1, event.getTitle());
+            stmt.setString(2, event.getDescription());
+            stmt.setTimestamp(3, Timestamp.valueOf(event.getDateTime()));
+            stmt.setString(4, event.getLocation());
+            stmt.setInt(5, event.getCapacity());
+            stmt.setDouble(6, event.getPrice());
+            stmt.setBoolean(7, event.isVirtual());
+            stmt.setInt(8, event.getOrganizerId());
+            stmt.executeUpdate();
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
