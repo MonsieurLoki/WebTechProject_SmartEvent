@@ -73,8 +73,10 @@
           </container>
           <configuration>
             <properties>
-              <cargo.servlet.port>8080</cargo.servlet.port>
-              <cargo.tomcat.uriEncoding>UTF-8</cargo.tomcat.uriEncoding>
+                <maven.compiler.source>17</maven.compiler.source>
+                <maven.compiler.target>17</maven.compiler.target>
+                <maven.compiler.parameters>true</maven.compiler.parameters>
+                <spring.version>6.1.6</spring.version>
             </properties>
           </configuration>
         </configuration>

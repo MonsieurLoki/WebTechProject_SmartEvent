@@ -27,12 +27,37 @@ public class EventDAO {
                 event.setVirtual(rs.getBoolean("is_virtual"));
                 events.add(event);
             }
-
+            
         } catch (SQLException e) {
             System.out.println("SQL ERROR: " + e.getMessage());
             e.printStackTrace();
         }
         System.out.println("Events found: " + events.size());
         return events;
+    }
+    
+    public Event getEventById(int id) {
+        String sql = "SELECT * FROM events WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql)) {
+            Class.forName("org.postgresql.Driver");
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Event event = new Event();
+                event.setId(rs.getInt("id"));
+                event.setTitle(rs.getString("title"));
+                event.setDescription(rs.getString("description"));
+                event.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
+                event.setLocation(rs.getString("location"));
+                event.setCapacity(rs.getInt("capacity"));
+                event.setPrice(rs.getDouble("price"));
+                event.setVirtual(rs.getBoolean("is_virtual"));
+                return event;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
