@@ -239,6 +239,7 @@ uri="jakarta.tags.core" %>
             </li>
             <li class="nav-item">
               <a class="btn btn-register" href="/WebTechProject/register">Register</a>
+              <a class="nav-link" href="/WebTechProject/logout">Logout</a>
             </li>
           </ul>
         </div>
