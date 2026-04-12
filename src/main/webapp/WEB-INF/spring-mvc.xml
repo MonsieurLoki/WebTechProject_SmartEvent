@@ -19,4 +19,11 @@
     <property name="suffix" value=".jsp"/>
   </bean>
 
+  <mvc:interceptors>
+    <mvc:interceptor>
+      <mvc:mapping path="/events/**"/>
+      <bean class="com.webtechproject.interceptor.AuthInterceptor"/>
+    </mvc:interceptor>
+  </mvc:interceptors>
+
 </beans>
