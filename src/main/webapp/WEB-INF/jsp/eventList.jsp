@@ -229,7 +229,7 @@ uri="jakarta.tags.core" %>
         <div class="collapse navbar-collapse" id="navMenu">
           <ul class="navbar-nav ms-auto align-items-center gap-3">
             <li class="nav-item">
-              <a class="nav-link active" href="#">Discover</a>
+              <a class="nav-link active" href="/WebTechProject/events">Discover</a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="#">My Tickets</a>
@@ -238,7 +238,7 @@ uri="jakarta.tags.core" %>
               <a class="nav-link" href="#">Organizer Dashboard</a>
             </li>
             <li class="nav-item">
-              <a class="btn btn-register" href="#">Register</a>
+              <a class="btn btn-register" href="/WebTechProject/register">Register</a>
             </li>
           </ul>
         </div>
@@ -324,9 +324,9 @@ uri="jakarta.tags.core" %>
                     </span>
                   </div>
 
-                  <button class="btn btn-details">
-                    <i class="bi bi-arrow-right me-1"></i>View Details
-                  </button>
+                  <a href="/WebTechProject/events/${event.id}" class="btn btn-details">
+                      <i class="bi bi-arrow-right me-1"></i>View Details
+                  </a>
                 </div>
               </div>
             </div>
