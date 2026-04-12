@@ -238,6 +238,9 @@ uri="jakarta.tags.core" %>
               <a class="nav-link" href="#">Organizer Dashboard</a>
             </li>
             <li class="nav-item">
+              <a class="nav-link" href="/WebTechProject/events/create">Create Event</a>
+            </li>
+            <li class="nav-item">
               <a class="btn btn-register" href="/WebTechProject/register">Register</a>
               <a class="nav-link" href="/WebTechProject/logout">Logout</a>
             </li>

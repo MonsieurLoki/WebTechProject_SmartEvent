@@ -43,4 +43,7 @@ public class Event {
     public void setPrice(double price) { this.price = price; }
     public boolean isVirtual() { return isVirtual; }
     public void setVirtual(boolean isVirtual) { this.isVirtual = isVirtual; }
+    private int organizerId;
+    public int getOrganizerId() { return organizerId; }
+    public void setOrganizerId(int organizerId) { this.organizerId = organizerId; }
 }
