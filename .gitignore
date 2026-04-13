@@ -1,4 +1,4 @@
 target/
-src/main/java/com/webtechproject/dao/DBConnection.java
+src/main/resources/db.properties
 *.class
 *.log
