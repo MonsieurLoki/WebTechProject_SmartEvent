@@ -6,14 +6,14 @@ import java.sql.*;
 public class UserDAO {
 
     public boolean save(User user) {
-        String sql = "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO users (full_name, email, password_hash, role) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             Class.forName("org.postgresql.Driver");
-            stmt.setString(1, user.getName());
+            stmt.setString(1, user.getFullName());
             stmt.setString(2, user.getEmail());
-            stmt.setString(3, user.getPassword());
-            stmt.setString(4, "attendee");
+            stmt.setString(3, user.getPasswordHash());
+            stmt.setString(4, "ATTENDEE");
             stmt.executeUpdate();
             return true;
         } catch (Exception e) {
@@ -32,15 +32,16 @@ public class UserDAO {
             if (rs.next()) {
                 User user = new User();
                 user.setId(rs.getInt("id"));
-                user.setName(rs.getString("name"));
+                user.setFullName(rs.getString("full_name"));
                 user.setEmail(rs.getString("email"));
-                user.setPassword(rs.getString("password"));
+                user.setPasswordHash(rs.getString("password_hash"));
                 user.setRole(rs.getString("role"));
                 return user;
             }
         } catch (Exception e) {
+            System.out.println("SAVE ERROR: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
     }
-}
+}   
