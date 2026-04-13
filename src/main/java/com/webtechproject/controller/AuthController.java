@@ -19,9 +19,9 @@ public class AuthController {
 
     @PostMapping("/register")
     public String register(@RequestParam("name") String name,
-                           @RequestParam("email") String email,
-                           @RequestParam("password") String password,
-                           Model model) {
+                        @RequestParam("email") String email,
+                        @RequestParam("password") String password,
+                        Model model) {
         UserDAO userDAO = new UserDAO();
         User existing = userDAO.findByEmail(email);
         if (existing != null) {
@@ -29,9 +29,9 @@ public class AuthController {
             return "register";
         }
         User user = new User();
-        user.setName(name);
+        user.setFullName(name);
         user.setEmail(email);
-        user.setPassword(password);
+        user.setPasswordHash(password);
         userDAO.save(user);
         return "redirect:/login";
     }
@@ -40,7 +40,7 @@ public class AuthController {
     public String loginPage() {
         return "login";
     }
-
+    
     @PostMapping("/login")
     public String login(@RequestParam("email") String email,
                         @RequestParam("password") String password,
@@ -48,7 +48,7 @@ public class AuthController {
                         Model model) {
         UserDAO userDAO = new UserDAO();
         User user = userDAO.findByEmail(email);
-        if (user == null || !user.getPassword().equals(password)) {
+        if (user == null || !user.getPasswordHash().equals(password)) {
             model.addAttribute("error", "Invalid email or password.");
             return "login";
         }
