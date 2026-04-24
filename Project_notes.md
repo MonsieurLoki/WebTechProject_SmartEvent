@@ -10,11 +10,10 @@
 cd ~/OneDrive/Erasmus2026/WebTechno/WebTechProject
 
 # 2. Compile and deploy
+rm -rf target
 mvn package
 cp target/WebTechProject.war "/c/Users/gaspa/OneDrive/Bureau/apache-tomcat-10.1.53/webapps/"
 rm -rf "/c/Users/gaspa/OneDrive/Bureau/apache-tomcat-10.1.53/webapps/WebTechProject"
-
-# 3. Restart Tomcat
 taskkill //F //IM java.exe
 cd "/c/Users/gaspa/OneDrive/Bureau/apache-tomcat-10.1.53/bin"
 ./startup.bat

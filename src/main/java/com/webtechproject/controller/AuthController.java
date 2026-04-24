@@ -1,5 +1,6 @@
 package com.webtechproject.controller;
 
+import com.webtechproject.dao.OrganizerRequestDAO;
 import com.webtechproject.dao.UserDAO;
 import com.webtechproject.model.User;
 import jakarta.servlet.http.HttpSession;
@@ -60,5 +61,24 @@ public class AuthController {
     public String logout(HttpSession session) {
         session.invalidate();
         return "redirect:/login";
+    }
+
+    @GetMapping("/request-organizer")
+    public String requestOrganizerPage(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        if (!"ATTENDEE".equals(user.getRole())) return "redirect:/events";
+        OrganizerRequestDAO dao = new OrganizerRequestDAO();
+        model.addAttribute("alreadyRequested", dao.hasPendingOrApprovedRequest(user.getId()));
+        return "requestOrganizer";
+    }
+
+    @PostMapping("/request-organizer")
+    public String submitOrganizerRequest(HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        if (!"ATTENDEE".equals(user.getRole())) return "redirect:/events";
+        new OrganizerRequestDAO().save(user.getId());
+        return "redirect:/request-organizer?submitted=true";
     }
 }
