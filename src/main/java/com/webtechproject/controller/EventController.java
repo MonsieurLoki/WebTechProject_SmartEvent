@@ -42,8 +42,11 @@ public class EventController {
 
 @GetMapping("/events/create")
 public String createEventPage(HttpSession session, Model model) {
-    if (session.getAttribute("user") == null) {
-        return "redirect:/login";
+    User user = (User) session.getAttribute("user");
+    if (user == null) return "redirect:/login";
+    if (!user.getRole().equals("ORGANIZER") && !user.getRole().equals("ADMIN")) {
+        model.addAttribute("error", "Only organizers can create events.");
+        return "redirect:/events";
     }
     return "createEvent";
 }
@@ -58,6 +61,10 @@ public String createEventPage(HttpSession session, Model model) {
                             @RequestParam(value = "isVirtual", defaultValue = "false") boolean isVirtual,
                             HttpSession session) {
         User organizer = (User) session.getAttribute("user");
+        if (organizer == null) return "redirect:/login";
+        if (!organizer.getRole().equals("ORGANIZER") && !organizer.getRole().equals("ADMIN")) {
+            return "redirect:/events";
+        }
         Event event = new Event();
         event.setTitle(title);
         event.setDescription(description);
