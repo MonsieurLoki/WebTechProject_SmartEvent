@@ -1,7 +1,9 @@
 package com.webtechproject.controller;
 
 import com.webtechproject.dao.EventDAO;
+import com.webtechproject.dao.RegistrationDAO;
 import com.webtechproject.model.Event;
+import com.webtechproject.model.Registration;
 import com.webtechproject.model.User;
 
 import jakarta.servlet.http.HttpSession;
@@ -77,5 +79,45 @@ public String createEventPage(HttpSession session, Model model) {
         EventDAO eventDAO = new EventDAO();
         eventDAO.save(event);
         return "redirect:/events";
+    }
+
+    @PostMapping("/events/{id}/register")
+    public String registerForEvent(@PathVariable("id") int eventId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+
+        RegistrationDAO registrationDAO = new RegistrationDAO();
+        EventDAO eventDAO = new EventDAO();
+
+        if (registrationDAO.existsByUserAndEvent(user.getId(), eventId)) {
+            return "redirect:/events/" + eventId + "?error=already_registered";
+        }
+
+        Event event = eventDAO.getEventById(eventId);
+        if (event == null) return "redirect:/events";
+
+        int registered = registrationDAO.countByEventId(eventId);
+        if (registered >= event.getCapacity()) {
+            return "redirect:/events/" + eventId + "?error=full";
+        }
+
+        Registration registration = new Registration();
+        registration.setUserId(user.getId());
+        registration.setEventId(eventId);
+        registration.setTicketType("STANDARD");
+        registration.setPricePaid(event.getPrice());
+        registrationDAO.save(registration);
+
+        return "redirect:/my-tickets";
+    }
+
+    @GetMapping("/my-tickets")
+    public String myTickets(HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        RegistrationDAO registrationDAO = new RegistrationDAO();
+        List<Registration> registrations = registrationDAO.findByUserId(user.getId());
+        model.addAttribute("registrations", registrations);
+        return "myTickets";
     }
 }

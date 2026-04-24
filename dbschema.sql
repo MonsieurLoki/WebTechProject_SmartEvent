@@ -80,6 +80,21 @@ CREATE TABLE feedback (
     UNIQUE (user_id, event_id)
 );
 
+CREATE TABLE organizer_requests (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL UNIQUE,
+  status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
+  requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  reviewed_at TIMESTAMP,
+  CONSTRAINT organizer_requests_status_chk
+    CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
+  CONSTRAINT organizer_requests_user_fk
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);
+
 CREATE TABLE payments (
   id SERIAL PRIMARY KEY,
   registration_id INTEGER NOT NULL UNIQUE,
