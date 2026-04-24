@@ -4,3 +4,4 @@ src/main/resources/db.properties
 *.log
 *.DS_Store
 *DS_Store
+claudeignore

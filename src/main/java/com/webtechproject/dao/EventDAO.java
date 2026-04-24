@@ -18,6 +18,7 @@ public class EventDAO {
             while (rs.next()) {
                 Event event = new Event();
                 event.setId(rs.getInt("id"));
+                event.setOrganizerId(rs.getInt("organizer_id"));
                 event.setTitle(rs.getString("title"));
                 event.setDescription(rs.getString("description"));
                 event.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
@@ -46,6 +47,7 @@ public class EventDAO {
             if (rs.next()) {
                 Event event = new Event();
                 event.setId(rs.getInt("id"));
+                event.setOrganizerId(rs.getInt("organizer_id"));
                 event.setTitle(rs.getString("title"));
                 event.setDescription(rs.getString("description"));
                 event.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
