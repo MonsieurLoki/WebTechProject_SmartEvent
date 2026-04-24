@@ -232,16 +232,27 @@ uri="jakarta.tags.core" %>
               <a class="nav-link active" href="/WebTechProject/events">Discover</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">My Tickets</a>
+              <a class="nav-link" href="/WebTechProject/my-tickets">My Tickets</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Organizer Dashboard</a>
-            </li>
+            <c:if test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
             <li class="nav-item">
               <a class="nav-link" href="/WebTechProject/events/create">Create Event</a>
             </li>
+            </c:if>
+            <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
             <li class="nav-item">
-              <a class="btn btn-register" href="/WebTechProject/register">Register</a>
+              <a class="nav-link" href="/WebTechProject/request-organizer">Become Organizer</a>
+            </li>
+            </c:if>
+            <c:if test="${sessionScope.user.role == 'ADMIN'}">
+            <li class="nav-item">
+              <a class="nav-link" href="/WebTechProject/admin/dashboard">Admin</a>
+            </li>
+            </c:if>
+            <li class="nav-item">
+              <span class="nav-link text-muted">${sessionScope.user.fullName}</span>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="/WebTechProject/logout">Logout</a>
             </li>
           </ul>
