@@ -22,6 +22,9 @@
   <mvc:interceptors>
     <mvc:interceptor>
       <mvc:mapping path="/events/**"/>
+      <mvc:mapping path="/my-tickets"/>
+      <mvc:mapping path="/request-organizer"/>
+      <mvc:mapping path="/admin/**"/>
       <bean class="com.webtechproject.interceptor.AuthInterceptor"/>
     </mvc:interceptor>
   </mvc:interceptors>
