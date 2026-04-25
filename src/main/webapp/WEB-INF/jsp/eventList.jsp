@@ -246,7 +246,12 @@ uri="jakarta.tags.core" %>
             </c:if>
             <c:if test="${sessionScope.user.role == 'ADMIN'}">
             <li class="nav-item">
-              <a class="nav-link" href="/WebTechProject/admin/dashboard">Admin</a>
+              <a class="nav-link" href="/WebTechProject/admin/dashboard">
+                Admin
+                <c:if test="${pendingRequestCount > 0}">
+                  <span class="badge bg-danger rounded-pill ms-1">${pendingRequestCount}</span>
+                </c:if>
+              </a>
             </li>
             </c:if>
             <li class="nav-item">

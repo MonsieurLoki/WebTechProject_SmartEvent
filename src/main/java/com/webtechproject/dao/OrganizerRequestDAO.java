@@ -36,6 +36,18 @@ public class OrganizerRequestDAO {
         }
     }
 
+    public int countPending() {
+        String sql = "SELECT COUNT(*) FROM organizer_requests WHERE status = 'PENDING'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) return rs.getInt(1);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
     public List<OrganizerRequest> findPending() {
         List<OrganizerRequest> list = new ArrayList<>();
         String sql = "SELECT r.id, r.user_id, r.status, r.requested_at, u.full_name, u.email " +

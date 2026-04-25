@@ -18,7 +18,14 @@
         </a>
         <ul class="navbar-nav ms-auto align-items-center gap-3">
             <li class="nav-item"><a class="nav-link" href="/WebTechProject/events">Discover</a></li>
-            <li class="nav-item"><a class="nav-link active" href="/WebTechProject/admin/dashboard">Admin</a></li>
+            <li class="nav-item">
+                <a class="nav-link active" href="/WebTechProject/admin/dashboard">
+                    Admin
+                    <c:if test="${pendingRequestCount > 0}">
+                        <span class="badge bg-danger rounded-pill ms-1">${pendingRequestCount}</span>
+                    </c:if>
+                </a>
+            </li>
             <li class="nav-item"><span class="nav-link text-muted">${sessionScope.user.fullName}</span></li>
             <li class="nav-item"><a class="nav-link" href="/WebTechProject/logout">Logout</a></li>
         </ul>
