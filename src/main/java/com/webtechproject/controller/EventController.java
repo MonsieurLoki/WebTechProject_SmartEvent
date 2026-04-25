@@ -82,7 +82,7 @@ public String createEventPage(HttpSession session, Model model) {
     }
 
     @PostMapping("/events/{id}/register")
-    public String registerForEvent(@PathVariable("id") int eventId, HttpSession session, Model model) {
+    public String registerForEvent(@PathVariable("id") int eventId, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
 

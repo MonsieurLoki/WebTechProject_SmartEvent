@@ -29,14 +29,14 @@ public class AdminController {
     }
 
     @PostMapping("/approve/{userId}")
-    public String approve(@PathVariable int userId, HttpSession session) {
+    public String approve(@PathVariable("userId") int userId, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/events";
         new OrganizerRequestDAO().approve(userId);
         return "redirect:/admin/dashboard";
     }
 
     @PostMapping("/reject/{userId}")
-    public String reject(@PathVariable int userId, HttpSession session) {
+    public String reject(@PathVariable("userId") int userId, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/events";
         new OrganizerRequestDAO().reject(userId);
         return "redirect:/admin/dashboard";
