@@ -85,6 +85,9 @@ public String createEventPage(HttpSession session, Model model) {
     public String registerForEvent(@PathVariable("id") int eventId, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
+        if ("ORGANIZER".equals(user.getRole()) || "ADMIN".equals(user.getRole())) {
+            return "redirect:/events/" + eventId;
+        }
 
         RegistrationDAO registrationDAO = new RegistrationDAO();
         EventDAO eventDAO = new EventDAO();
@@ -115,6 +118,9 @@ public String createEventPage(HttpSession session, Model model) {
     public String myTickets(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
+        if ("ORGANIZER".equals(user.getRole()) || "ADMIN".equals(user.getRole())) {
+            return "redirect:/organizer/dashboard";
+        }
         RegistrationDAO registrationDAO = new RegistrationDAO();
         List<Registration> registrations = registrationDAO.findByUserId(user.getId());
         model.addAttribute("registrations", registrations);

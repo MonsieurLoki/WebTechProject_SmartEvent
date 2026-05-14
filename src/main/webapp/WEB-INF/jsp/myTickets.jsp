@@ -31,8 +31,11 @@
         <div class="collapse navbar-collapse">
             <ul class="navbar-nav ms-auto align-items-center gap-3">
                 <li class="nav-item"><a class="nav-link" href="/WebTechProject/events">Discover</a></li>
-                <li class="nav-item"><a class="nav-link active" href="/WebTechProject/my-tickets">My Tickets</a></li>
+                <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
+                    <li class="nav-item"><a class="nav-link active" href="/WebTechProject/my-tickets">My Tickets</a></li>
+                </c:if>
                 <c:if test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
+                    <li class="nav-item"><a class="nav-link" href="/WebTechProject/organizer/dashboard">My Dashboard</a></li>
                     <li class="nav-item"><a class="nav-link" href="/WebTechProject/events/create">Create Event</a></li>
                 </c:if>
                 <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
