@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -115,6 +116,7 @@
                             <th>Location</th>
                             <th>Registrations</th>
                             <th>Revenue</th>
+                            <th>Rating</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -148,6 +150,25 @@
                                             <span class="text-muted">Free</span>
                                         </c:when>
                                         <c:otherwise>${s.revenue} €</c:otherwise>
+                                    </c:choose>
+                                </td>
+                                <td class="align-middle">
+                                    <c:choose>
+                                        <c:when test="${s.ratingCount > 0}">
+                                            <span class="text-warning">
+                                                <c:forEach begin="1" end="5" var="i">
+                                                    <c:choose>
+                                                        <c:when test="${i <= s.avgRating}"><i class="bi bi-star-fill"></i></c:when>
+                                                        <c:when test="${i - 0.5 <= s.avgRating}"><i class="bi bi-star-half"></i></c:when>
+                                                        <c:otherwise><i class="bi bi-star"></i></c:otherwise>
+                                                    </c:choose>
+                                                </c:forEach>
+                                            </span>
+                                            <span class="text-muted small ms-1"><fmt:formatNumber value="${s.avgRating}" maxFractionDigits="1"/> (${s.ratingCount})</span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="text-muted small">No ratings</span>
+                                        </c:otherwise>
                                     </c:choose>
                                 </td>
                             </tr>

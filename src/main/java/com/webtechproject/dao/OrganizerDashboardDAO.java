@@ -11,9 +11,11 @@ public class OrganizerDashboardDAO {
     public List<EventStats> getEventStats(int organizerId) {
         List<EventStats> stats = new ArrayList<>();
         String sql = "SELECT e.id, e.title, e.date_time, e.location, e.is_virtual, e.capacity, " +
-                     "COUNT(r.id) AS registrations, COALESCE(SUM(r.price_paid), 0) AS revenue " +
+                     "COUNT(DISTINCT r.id) AS registrations, COALESCE(SUM(r.price_paid), 0) AS revenue, " +
+                     "COALESCE(AVG(f.rating), 0) AS avg_rating, COUNT(DISTINCT f.id) AS rating_count " +
                      "FROM events e " +
                      "LEFT JOIN registrations r ON r.event_id = e.id AND r.status = 'CONFIRMED' " +
+                     "LEFT JOIN feedback f ON f.event_id = e.id " +
                      "WHERE e.organizer_id = ? " +
                      "GROUP BY e.id, e.title, e.date_time, e.location, e.is_virtual, e.capacity " +
                      "ORDER BY e.date_time DESC";
@@ -31,6 +33,8 @@ public class OrganizerDashboardDAO {
                 es.setCapacity(rs.getInt("capacity"));
                 es.setRegistrations(rs.getInt("registrations"));
                 es.setRevenue(rs.getDouble("revenue"));
+                es.setAvgRating(rs.getDouble("avg_rating"));
+                es.setRatingCount(rs.getInt("rating_count"));
                 stats.add(es);
             }
         } catch (Exception e) {

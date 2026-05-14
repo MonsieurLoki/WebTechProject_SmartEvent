@@ -11,6 +11,8 @@ public class EventStats {
     private int capacity;
     private int registrations;
     private double revenue;
+    private double avgRating;
+    private int ratingCount;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
@@ -28,6 +30,10 @@ public class EventStats {
     public void setRegistrations(int registrations) { this.registrations = registrations; }
     public double getRevenue() { return revenue; }
     public void setRevenue(double revenue) { this.revenue = revenue; }
+    public double getAvgRating() { return avgRating; }
+    public void setAvgRating(double avgRating) { this.avgRating = avgRating; }
+    public int getRatingCount() { return ratingCount; }
+    public void setRatingCount(int ratingCount) { this.ratingCount = ratingCount; }
 
     public int getFillPercent() {
         if (capacity == 0) return 0;
