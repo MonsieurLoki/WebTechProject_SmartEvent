@@ -1,5 +1,6 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,12 +20,24 @@
     <c:if test="${param.error == 'full'}">
         <div class="alert alert-danger">This event is full.</div>
     </c:if>
+    <c:if test="${param.error == 'invalid_rating'}">
+        <div class="alert alert-danger">Rating must be between 1 and 5.</div>
+    </c:if>
+    <c:if test="${param.error == 'event_not_finished'}">
+        <div class="alert alert-warning">Feedback is only available after the event has finished.</div>
+    </c:if>
+    <c:if test="${param.error == 'already_feedback'}">
+        <div class="alert alert-warning">You have already rated this event.</div>
+    </c:if>
+    <c:if test="${param.error == 'feedback_failed'}">
+        <div class="alert alert-danger">Feedback could not be saved. Please try again.</div>
+    </c:if>
 
     <div class="card p-4 shadow-sm">
         <h1 class="mb-1">${event.title}</h1>
         <p class="text-muted mb-3">${event.description}</p>
         <hr>
-        <p><i class="bi bi-calendar3 me-2 text-primary"></i><strong>Date:</strong> ${event.dateTime}</p>
+        <p><i class="bi bi-calendar3 me-2 text-primary"></i><strong>Date:</strong> ${event.formattedDateTime}</p>
         <p><i class="bi bi-geo-alt me-2 text-primary"></i><strong>Location:</strong> ${event.location}</p>
         <p><i class="bi bi-people me-2 text-primary"></i><strong>Capacity:</strong> ${event.capacity} people</p>
         <p><i class="bi bi-tag me-2 text-primary"></i><strong>Price:</strong>
@@ -38,6 +51,21 @@
             ${event.virtual ? 'Virtual' : 'In-person'}
         </span>
 
+        <div class="border-top pt-3 mb-4">
+            <h5 class="mb-2"><i class="bi bi-star-fill text-warning me-1"></i>Ratings</h5>
+            <c:choose>
+                <c:when test="${ratingCount > 0}">
+                    <p class="mb-0">
+                        <strong><fmt:formatNumber value="${averageRating}" maxFractionDigits="1"/></strong> / 5
+                        <span class="text-muted">(${ratingCount} ratings)</span>
+                    </p>
+                </c:when>
+                <c:otherwise>
+                    <p class="text-muted mb-0">No ratings yet.</p>
+                </c:otherwise>
+            </c:choose>
+        </div>
+
         <div class="mt-2">
             <c:choose>
                 <c:when test="${sessionScope.user.role == 'ATTENDEE'}">
@@ -50,6 +78,72 @@
                 <c:when test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
                     <p class="text-muted fst-italic">Organizers cannot register for events.</p>
                 </c:when>
+            </c:choose>
+        </div>
+
+        <c:if test="${eventFinished}">
+            <div class="border-top pt-4 mt-4">
+                <h5 class="mb-3"><i class="bi bi-chat-left-text me-1"></i>Your feedback</h5>
+                <c:choose>
+                    <c:when test="${not empty userFeedback}">
+                        <div class="alert alert-success mb-0">
+                            <strong>You rated this event ${userFeedback.rating}/5.</strong>
+                            <c:if test="${not empty userFeedback.comment}">
+                                <div class="mt-2">${userFeedback.comment}</div>
+                            </c:if>
+                        </div>
+                    </c:when>
+                    <c:otherwise>
+                        <form method="post" action="/WebTechProject/events/${event.id}/feedback">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label">Rating</label>
+                                <select class="form-select" id="rating" name="rating" required>
+                                    <option value="5">5 - Excellent</option>
+                                    <option value="4">4 - Good</option>
+                                    <option value="3">3 - Okay</option>
+                                    <option value="2">2 - Poor</option>
+                                    <option value="1">1 - Bad</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label">Comment</label>
+                                <textarea class="form-control" id="comment" name="comment" rows="3" placeholder="Optional comment"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-send me-1"></i>Submit feedback
+                            </button>
+                        </form>
+                    </c:otherwise>
+                </c:choose>
+            </div>
+        </c:if>
+
+        <div class="border-top pt-4 mt-4">
+            <h5 class="mb-3"><i class="bi bi-chat-dots me-1"></i>Comments</h5>
+            <c:choose>
+                <c:when test="${empty feedbackList}">
+                    <p class="text-muted mb-0">No comments yet.</p>
+                </c:when>
+                <c:otherwise>
+                    <div class="d-flex flex-column gap-3">
+                        <c:forEach var="feedback" items="${feedbackList}">
+                            <div class="border rounded p-3 bg-light">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong>${feedback.user.fullName}</strong>
+                                    <span class="badge bg-warning text-dark">${feedback.rating}/5</span>
+                                </div>
+                                <c:choose>
+                                    <c:when test="${not empty feedback.comment}">
+                                        <p class="mb-0">${feedback.comment}</p>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <p class="text-muted fst-italic mb-0">No comment provided.</p>
+                                    </c:otherwise>
+                                </c:choose>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:otherwise>
             </c:choose>
         </div>
     </div>

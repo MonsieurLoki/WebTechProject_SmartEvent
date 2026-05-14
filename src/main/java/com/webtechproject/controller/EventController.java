@@ -1,8 +1,10 @@
 package com.webtechproject.controller;
 
 import com.webtechproject.dao.EventDAO;
+import com.webtechproject.dao.FeedbackDAO;
 import com.webtechproject.dao.RegistrationDAO;
 import com.webtechproject.model.Event;
+import com.webtechproject.model.Feedback;
 import com.webtechproject.model.Registration;
 import com.webtechproject.model.User;
 
@@ -35,11 +37,57 @@ public class EventController {
     }
 
     @GetMapping("/events/{id}")
-    public String eventDetail(@PathVariable("id") int id, Model model) {
+    public String eventDetail(@PathVariable("id") int id, HttpSession session, Model model) {
         EventDAO eventDAO = new EventDAO();
         Event event = eventDAO.getEventById(id);
+        if (event == null) return "redirect:/events";
+
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        User user = (User) session.getAttribute("user");
+
         model.addAttribute("event", event);
+        model.addAttribute("eventFinished", feedbackDAO.isEventFinished(id));
+        model.addAttribute("averageRating", feedbackDAO.getAverageRatingByEventId(id));
+        model.addAttribute("ratingCount", feedbackDAO.countByEventId(id));
+        model.addAttribute("feedbackList", feedbackDAO.findByEventId(id));
+        if (user != null) {
+            model.addAttribute("userFeedback", feedbackDAO.findByUserAndEvent(user.getId(), id));
+        }
         return "eventDetail";
+    }
+
+    @PostMapping("/events/{id}/feedback")
+    public String submitFeedback(@PathVariable("id") int eventId,
+                                 @RequestParam("rating") int rating,
+                                 @RequestParam(value = "comment", required = false) String comment,
+                                 HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        if (rating < 1 || rating > 5) return "redirect:/events/" + eventId + "?error=invalid_rating";
+
+        EventDAO eventDAO = new EventDAO();
+        Event event = eventDAO.getEventById(eventId);
+        if (event == null) return "redirect:/events";
+        FeedbackDAO feedbackDAO = new FeedbackDAO();
+        if (!feedbackDAO.isEventFinished(eventId)) {
+            return "redirect:/events/" + eventId + "?error=event_not_finished";
+        }
+
+        if (feedbackDAO.findByUserAndEvent(user.getId(), eventId) != null) {
+            return "redirect:/events/" + eventId + "?error=already_feedback";
+        }
+
+        Feedback feedback = new Feedback();
+        feedback.setUserId(user.getId());
+        feedback.setEventId(eventId);
+        feedback.setRating(rating);
+        feedback.setComment(comment == null || comment.trim().isEmpty() ? null : comment.trim());
+
+        if (!feedbackDAO.save(feedback)) {
+            return "redirect:/events/" + eventId + "?error=feedback_failed";
+        }
+
+        return "redirect:/events/" + eventId;
     }
 
 @GetMapping("/events/create")

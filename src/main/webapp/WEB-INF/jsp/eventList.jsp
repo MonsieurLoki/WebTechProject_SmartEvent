@@ -324,7 +324,7 @@ uri="jakarta.tags.core" %>
                   <h5 class="event-title">${event.title}</h5>
 
                   <p class="event-meta">
-                    <i class="bi bi-calendar3"></i>${event.dateTime}
+                    <i class="bi bi-calendar3"></i>${event.formattedDateTime}
                   </p>
                   <p class="event-meta">
                     <i class="bi bi-geo-alt"></i>${event.location}
