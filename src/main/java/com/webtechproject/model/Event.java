@@ -1,8 +1,11 @@
 package com.webtechproject.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Event {
+    private static final DateTimeFormatter DISPLAY_FORMATTER = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
     private int id;
     private String title;
     private String description;
@@ -35,6 +38,7 @@ public class Event {
     public void setDescription(String description) { this.description = description; }
     public LocalDateTime getDateTime() { return dateTime; }
     public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
+    public String getFormattedDateTime() { return dateTime == null ? "" : dateTime.format(DISPLAY_FORMATTER); }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     public int getCapacity() { return capacity; }

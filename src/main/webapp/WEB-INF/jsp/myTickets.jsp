@@ -81,7 +81,7 @@
                                     </a>
                                 </h5>
                                 <p class="text-muted mb-1">
-                                    <i class="bi bi-calendar3 me-1"></i>${reg.event.dateTime}
+                                    <i class="bi bi-calendar3 me-1"></i>${reg.event.formattedDateTime}
                                 </p>
                                 <p class="text-muted mb-1">
                                     <i class="bi bi-geo-alt me-1"></i>${reg.event.location}
