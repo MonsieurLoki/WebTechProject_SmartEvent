@@ -130,6 +130,65 @@ public String createEventPage(HttpSession session, Model model) {
         return "redirect:/events";
     }
 
+    @GetMapping("/events/{id}/edit")
+    public String editEventPage(@PathVariable("id") int eventId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        EventDAO eventDAO = new EventDAO();
+        Event event = eventDAO.getEventById(eventId);
+        if (event == null) return "redirect:/events";
+        if (!isEventOwnerOrAdmin(event, user)) return "redirect:/events";
+        model.addAttribute("event", event);
+        return "editEvent";
+    }
+
+    @PostMapping("/events/{id}/edit")
+    public String editEvent(@PathVariable("id") int eventId,
+                            @RequestParam("title") String title,
+                            @RequestParam("description") String description,
+                            @RequestParam("dateTime") String dateTime,
+                            @RequestParam("location") String location,
+                            @RequestParam("capacity") int capacity,
+                            @RequestParam("price") double price,
+                            @RequestParam(value = "isVirtual", defaultValue = "false") boolean isVirtual,
+                            HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        EventDAO eventDAO = new EventDAO();
+        Event event = eventDAO.getEventById(eventId);
+        if (event == null) return "redirect:/events";
+        if (!isEventOwnerOrAdmin(event, user)) return "redirect:/events";
+
+        event.setTitle(title);
+        event.setDescription(description);
+        event.setDateTime(LocalDateTime.parse(dateTime));
+        event.setLocation(location);
+        event.setCapacity(capacity);
+        event.setPrice(price);
+        event.setVirtual(isVirtual);
+
+        eventDAO.update(event);
+        return "redirect:/events/" + eventId;
+    }
+
+    @PostMapping("/events/{id}/delete")
+    public String deleteEvent(@PathVariable("id") int eventId, HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        EventDAO eventDAO = new EventDAO();
+        Event event = eventDAO.getEventById(eventId);
+        if (event == null) return "redirect:/events";
+        if (!isEventOwnerOrAdmin(event, user)) return "redirect:/events";
+        eventDAO.deleteById(eventId);
+        return "redirect:/events";
+    }
+
+    private boolean isEventOwnerOrAdmin(Event event, User user) {
+        if (user == null) return false;
+        if ("ADMIN".equals(user.getRole())) return true;
+        return "ORGANIZER".equals(user.getRole()) && event.getOrganizerId() == user.getId();
+    }
+
     @PostMapping("/events/{id}/register")
     public String registerForEvent(@PathVariable("id") int eventId, HttpSession session) {
         User user = (User) session.getAttribute("user");

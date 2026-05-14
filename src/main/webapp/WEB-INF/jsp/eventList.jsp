@@ -349,9 +349,19 @@ uri="jakarta.tags.core" %>
                     </span>
                   </div>
 
-                  <a href="/WebTechProject/events/${event.id}" class="btn btn-details">
-                      <i class="bi bi-arrow-right me-1"></i>View Details
-                  </a>
+                  <div class="d-grid gap-2">
+                    <a href="/WebTechProject/events/${event.id}" class="btn btn-details">
+                        <i class="bi bi-arrow-right me-1"></i>View Details
+                    </a>
+                    <c:if test="${not empty sessionScope.user && (sessionScope.user.role == 'ADMIN' || (sessionScope.user.role == 'ORGANIZER' && event.organizerId == sessionScope.user.id))}">
+                      <div class="d-flex gap-2">
+                        <a href="/WebTechProject/events/${event.id}/edit" class="btn btn-outline-secondary btn-sm flex-fill">Edit</a>
+                        <form method="post" action="/WebTechProject/events/${event.id}/delete" class="mb-0 flex-fill" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                          <button type="submit" class="btn btn-outline-danger btn-sm w-100">Delete</button>
+                        </form>
+                      </div>
+                    </c:if>
+                  </div>
                 </div>
               </div>
             </div>
