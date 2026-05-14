@@ -231,10 +231,15 @@ uri="jakarta.tags.core" %>
             <li class="nav-item">
               <a class="nav-link active" href="/WebTechProject/events">Discover</a>
             </li>
+            <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
             <li class="nav-item">
               <a class="nav-link" href="/WebTechProject/my-tickets">My Tickets</a>
             </li>
+            </c:if>
             <c:if test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
+            <li class="nav-item">
+              <a class="nav-link" href="/WebTechProject/organizer/dashboard">My Dashboard</a>
+            </li>
             <li class="nav-item">
               <a class="nav-link" href="/WebTechProject/events/create">Create Event</a>
             </li>
@@ -324,7 +329,7 @@ uri="jakarta.tags.core" %>
                   <h5 class="event-title">${event.title}</h5>
 
                   <p class="event-meta">
-                    <i class="bi bi-calendar3"></i>${event.dateTime}
+                    <i class="bi bi-calendar3"></i>${event.formattedDateTime}
                   </p>
                   <p class="event-meta">
                     <i class="bi bi-geo-alt"></i>${event.location}
