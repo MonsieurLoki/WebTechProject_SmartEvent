@@ -17,11 +17,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Arrays;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Controller
 public class EventController {
+    private static final List<String> CATEGORIES = Arrays.asList("Technology", "Music", "Design", "Networking", "Sports");
 
     @GetMapping("/")
     public String home() {
@@ -29,10 +31,15 @@ public class EventController {
     }
 
     @GetMapping("/events")
-    public String listEvents(Model model) {
+    public String listEvents(@RequestParam(value = "q", required = false) String q,
+                             @RequestParam(value = "category", required = false) String category,
+                             Model model) {
         EventDAO eventDAO = new EventDAO();
-        List<Event> events = eventDAO.getAllEvents();
+        List<Event> events = eventDAO.searchEvents(q, category);
         model.addAttribute("events", events);
+        model.addAttribute("q", q == null ? "" : q);
+        model.addAttribute("selectedCategory", category == null || category.isEmpty() ? "All" : category);
+        model.addAttribute("categories", CATEGORIES);
         return "eventList";
     }
 
@@ -109,6 +116,7 @@ public String createEventPage(HttpSession session, Model model) {
                             @RequestParam("location") String location,
                             @RequestParam("capacity") int capacity,
                             @RequestParam("price") double price,
+                            @RequestParam(value = "category", defaultValue = "General") String category,
                             @RequestParam(value = "isVirtual", defaultValue = "false") boolean isVirtual,
                             HttpSession session) {
         User organizer = (User) session.getAttribute("user");
@@ -124,6 +132,7 @@ public String createEventPage(HttpSession session, Model model) {
         event.setCapacity(capacity);
         event.setPrice(price);
         event.setVirtual(isVirtual);
+        event.setCategory(category);
         event.setOrganizerId(organizer.getId());
         EventDAO eventDAO = new EventDAO();
         eventDAO.save(event);

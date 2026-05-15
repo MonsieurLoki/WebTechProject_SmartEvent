@@ -19,6 +19,7 @@ CREATE TABLE events (
   capacity INTEGER NOT NULL,
   price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
   is_virtual BOOLEAN NOT NULL DEFAULT FALSE,
+  category VARCHAR(50) DEFAULT 'General',
   created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT events_capacity_chk
     CHECK (capacity > 0),
