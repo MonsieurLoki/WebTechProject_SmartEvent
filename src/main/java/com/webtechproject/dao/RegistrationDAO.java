@@ -9,20 +9,21 @@ import java.util.List;
 
 public class RegistrationDAO {
 
-    public boolean save(Registration registration) {
+    public int save(Registration registration) {
         String sql = "INSERT INTO registrations (user_id, event_id, ticket_type, price_paid, status) VALUES (?, ?, ?, ?, 'CONFIRMED')";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             stmt.setInt(1, registration.getUserId());
             stmt.setInt(2, registration.getEventId());
             stmt.setString(3, registration.getTicketType());
             stmt.setDouble(4, registration.getPricePaid());
             stmt.executeUpdate();
-            return true;
+            ResultSet keys = stmt.getGeneratedKeys();
+            if (keys.next()) return keys.getInt(1);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
+        return -1;
     }
 
     public boolean existsByUserAndEvent(int userId, int eventId) {
