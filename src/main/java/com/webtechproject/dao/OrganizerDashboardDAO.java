@@ -1,5 +1,6 @@
 package com.webtechproject.dao;
 
+import com.webtechproject.model.Attendee;
 import com.webtechproject.model.EventStats;
 
 import java.sql.*;
@@ -41,5 +42,32 @@ public class OrganizerDashboardDAO {
             e.printStackTrace();
         }
         return stats;
+    }
+
+    public List<Attendee> getAttendeesForEvent(int eventId, int organizerId) {
+        List<Attendee> attendees = new ArrayList<>();
+        String sql = "SELECT u.full_name, u.email, r.registered_at, r.price_paid " +
+                     "FROM registrations r " +
+                     "JOIN users u ON u.id = r.user_id " +
+                     "JOIN events e ON e.id = r.event_id " +
+                     "WHERE r.event_id = ? AND e.organizer_id = ? AND r.status = 'CONFIRMED' " +
+                     "ORDER BY r.registered_at ASC";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, eventId);
+            stmt.setInt(2, organizerId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                Attendee a = new Attendee();
+                a.setFullName(rs.getString("full_name"));
+                a.setEmail(rs.getString("email"));
+                a.setRegisteredAt(rs.getTimestamp("registered_at").toLocalDateTime());
+                a.setPricePaid(rs.getDouble("price_paid"));
+                attendees.add(a);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return attendees;
     }
 }
