@@ -2,6 +2,7 @@ package com.webtechproject.controller;
 
 import com.webtechproject.dao.EventDAO;
 import com.webtechproject.dao.FeedbackDAO;
+import com.webtechproject.dao.PaymentDAO;
 import com.webtechproject.dao.RegistrationDAO;
 import com.webtechproject.model.Event;
 import com.webtechproject.model.Feedback;
@@ -224,14 +225,72 @@ public String createEventPage(HttpSession session, Model model) {
             return "redirect:/events/" + eventId + "?error=full";
         }
 
+        if (event.getPrice() > 0) {
+            return "redirect:/events/" + eventId + "/pay";
+        }
+
+        Registration registration = new Registration();
+        registration.setUserId(user.getId());
+        registration.setEventId(eventId);
+        registration.setTicketType("STANDARD");
+        registration.setPricePaid(0);
+        registrationDAO.save(registration);
+
+        return "redirect:/my-tickets";
+    }
+
+    @GetMapping("/events/{id}/pay")
+    public String paymentPage(@PathVariable("id") int eventId, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        if (!"ATTENDEE".equals(user.getRole())) return "redirect:/events/" + eventId;
+
+        EventDAO eventDAO = new EventDAO();
+        Event event = eventDAO.getEventById(eventId);
+        if (event == null || event.getPrice() == 0) return "redirect:/events";
+
+        RegistrationDAO registrationDAO = new RegistrationDAO();
+        if (registrationDAO.existsByUserAndEvent(user.getId(), eventId)) {
+            return "redirect:/my-tickets";
+        }
+
+        model.addAttribute("event", event);
+        return "paymentForm";
+    }
+
+    @PostMapping("/events/{id}/pay")
+    public String processPayment(@PathVariable("id") int eventId,
+                                 HttpSession session) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) return "redirect:/login";
+        if (!"ATTENDEE".equals(user.getRole())) return "redirect:/events/" + eventId;
+
+        EventDAO eventDAO = new EventDAO();
+        Event event = eventDAO.getEventById(eventId);
+        if (event == null) return "redirect:/events";
+
+        RegistrationDAO registrationDAO = new RegistrationDAO();
+        if (registrationDAO.existsByUserAndEvent(user.getId(), eventId)) {
+            return "redirect:/my-tickets";
+        }
+
+        int count = registrationDAO.countByEventId(eventId);
+        if (count >= event.getCapacity()) {
+            return "redirect:/events/" + eventId + "?error=full";
+        }
+
         Registration registration = new Registration();
         registration.setUserId(user.getId());
         registration.setEventId(eventId);
         registration.setTicketType("STANDARD");
         registration.setPricePaid(event.getPrice());
-        registrationDAO.save(registration);
+        int registrationId = registrationDAO.save(registration);
 
-        return "redirect:/my-tickets";
+        if (registrationId > 0) {
+            new PaymentDAO().save(registrationId, event.getPrice());
+        }
+
+        return "redirect:/my-tickets?success=payment";
     }
 
     @GetMapping("/my-tickets")

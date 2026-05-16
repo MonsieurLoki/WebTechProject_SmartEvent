@@ -60,6 +60,12 @@
 
 <div class="container mt-5" style="max-width:800px">
     <h2 class="fw-bold mb-4"><i class="bi bi-ticket-perforated me-2"></i>My Tickets</h2>
+    <c:if test="${param.success == 'payment'}">
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-check-circle-fill"></i>
+            Payment successful! Your ticket has been confirmed.
+        </div>
+    </c:if>
 
     <c:choose>
         <c:when test="${empty registrations}">
