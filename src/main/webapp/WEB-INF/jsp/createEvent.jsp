@@ -36,6 +36,17 @@
             <label>Price (€)</label>
             <input type="number" step="0.01" name="price" class="form-control" value="0"/>
         </div>
+        <div class="mb-3">
+            <label>Category</label>
+            <select name="category" class="form-control" required>
+                <option value="General">General</option>
+                <option value="Technology">Technology</option>
+                <option value="Music">Music</option>
+                <option value="Design">Design</option>
+                <option value="Networking">Networking</option>
+                <option value="Sports">Sports</option>
+            </select>
+        </div>
         <div class="mb-3 form-check">
             <input type="checkbox" name="isVirtual" class="form-check-input" id="isVirtual"/>
             <label class="form-check-label" for="isVirtual">Virtual event</label>

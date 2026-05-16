@@ -39,6 +39,7 @@
         <hr>
         <p><i class="bi bi-calendar3 me-2 text-primary"></i><strong>Date:</strong> ${event.formattedDateTime}</p>
         <p><i class="bi bi-geo-alt me-2 text-primary"></i><strong>Location:</strong> ${event.location}</p>
+        <p><i class="bi bi-bookmark me-2 text-primary"></i><strong>Category:</strong> ${empty event.category ? 'General' : event.category}</p>
         <p><i class="bi bi-people me-2 text-primary"></i><strong>Capacity:</strong> ${event.capacity} people</p>
         <p><i class="bi bi-tag me-2 text-primary"></i><strong>Price:</strong>
             <c:choose>
