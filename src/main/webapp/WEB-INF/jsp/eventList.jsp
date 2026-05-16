@@ -278,13 +278,18 @@ uri="jakarta.tags.core" %>
           Find conferences, workshops, festivals, and meetups happening around
           you or online.
         </p>
-        <div class="search-box">
+        <form class="search-box" method="get" action="/WebTechProject/events">
+          <c:if test="${selectedCategory != 'All'}">
+            <input type="hidden" name="category" value="${selectedCategory}" />
+          </c:if>
           <input
             type="text"
+            name="q"
+            value="${q}"
             placeholder="Search by event name, location, or category..."
           />
-          <button><i class="bi bi-search me-2"></i>Search</button>
-        </div>
+          <button type="submit"><i class="bi bi-search me-2"></i>Search</button>
+        </form>
       </div>
     </section>
 
@@ -292,12 +297,21 @@ uri="jakarta.tags.core" %>
     <div class="container">
       <div class="filters mb-4">
         <div class="d-flex align-items-center gap-2 flex-wrap">
-          <button class="filter-btn active">All</button>
-          <button class="filter-btn">Technology</button>
-          <button class="filter-btn">Music</button>
-          <button class="filter-btn">Design</button>
-          <button class="filter-btn">Networking</button>
-          <button class="filter-btn">Sports</button>
+          <c:url var="allUrl" value="/events">
+            <c:if test="${not empty q}">
+              <c:param name="q" value="${q}" />
+            </c:if>
+          </c:url>
+          <a href="${allUrl}" class="filter-btn text-decoration-none ${selectedCategory == 'All' ? 'active' : ''}">All</a>
+          <c:forEach var="category" items="${categories}">
+            <c:url var="categoryUrl" value="/events">
+              <c:param name="category" value="${category}" />
+              <c:if test="${not empty q}">
+                <c:param name="q" value="${q}" />
+              </c:if>
+            </c:url>
+            <a href="${categoryUrl}" class="filter-btn text-decoration-none ${selectedCategory == category ? 'active' : ''}">${category}</a>
+          </c:forEach>
         </div>
       </div>
 
@@ -307,8 +321,16 @@ uri="jakarta.tags.core" %>
           <span class="event-count">${events.size()} events found</span>
         </div>
 
-        <div class="row g-4">
-          <c:forEach var="event" items="${events}">
+        <c:choose>
+          <c:when test="${empty events}">
+            <div class="text-center py-5 text-muted">
+              <i class="bi bi-search fs-1 d-block mb-3"></i>
+              <p>No events found for your search.</p>
+            </div>
+          </c:when>
+          <c:otherwise>
+            <div class="row g-4">
+              <c:forEach var="event" items="${events}">
             <div class="col-md-4">
               <div class="event-card card">
                 <!-- Image placeholder avec icône -->
@@ -327,6 +349,12 @@ uri="jakarta.tags.core" %>
                   </span>
 
                   <h5 class="event-title">${event.title}</h5>
+
+                  <c:if test="${not empty event.category}">
+                    <p class="event-meta">
+                      <i class="bi bi-bookmark"></i>${event.category}
+                    </p>
+                  </c:if>
 
                   <p class="event-meta">
                     <i class="bi bi-calendar3"></i>${event.formattedDateTime}
@@ -365,22 +393,13 @@ uri="jakarta.tags.core" %>
                 </div>
               </div>
             </div>
-          </c:forEach>
-        </div>
+              </c:forEach>
+            </div>
+          </c:otherwise>
+        </c:choose>
       </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-      // Filtres actifs
-      document.querySelectorAll(".filter-btn").forEach((btn) => {
-        btn.addEventListener("click", () => {
-          document
-            .querySelectorAll(".filter-btn")
-            .forEach((b) => b.classList.remove("active"));
-          btn.classList.add("active");
-        });
-      });
-    </script>
   </body>
 </html>

@@ -9,24 +9,14 @@ public class EventDAO {
 
     public List<Event> getAllEvents() {
         List<Event> events = new ArrayList<>();
-        String sql = "SELECT * FROM events";
+        String sql = "SELECT * FROM events ORDER BY date_time ASC";
 
         try (Connection conn = DBConnection.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
             while (rs.next()) {
-                Event event = new Event();
-                event.setId(rs.getInt("id"));
-                event.setOrganizerId(rs.getInt("organizer_id"));
-                event.setTitle(rs.getString("title"));
-                event.setDescription(rs.getString("description"));
-                event.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
-                event.setLocation(rs.getString("location"));
-                event.setCapacity(rs.getInt("capacity"));
-                event.setPrice(rs.getDouble("price"));
-                event.setVirtual(rs.getBoolean("is_virtual"));
-                events.add(event);
+                events.add(mapEvent(rs));
             }
             
         } catch (SQLException e) {
@@ -34,6 +24,41 @@ public class EventDAO {
             e.printStackTrace();
         }
         System.out.println("Events found: " + events.size());
+        return events;
+    }
+
+    public List<Event> searchEvents(String keyword, String category) {
+        List<Event> events = new ArrayList<>();
+        List<Object> params = new ArrayList<>();
+        StringBuilder sql = new StringBuilder("SELECT * FROM events WHERE 1=1");
+
+        if (keyword != null && !keyword.trim().isEmpty()) {
+            sql.append(" AND (title ILIKE ? OR description ILIKE ? OR location ILIKE ?)");
+            String searchTerm = "%" + keyword.trim() + "%";
+            params.add(searchTerm);
+            params.add(searchTerm);
+            params.add(searchTerm);
+        }
+
+        if (category != null && !category.trim().isEmpty() && !"All".equals(category)) {
+            sql.append(" AND category = ?");
+            params.add(category.trim());
+        }
+
+        sql.append(" ORDER BY date_time ASC");
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql.toString())) {
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                events.add(mapEvent(rs));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return events;
     }
 
@@ -45,17 +70,7 @@ public class EventDAO {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                Event event = new Event();
-                event.setId(rs.getInt("id"));
-                event.setOrganizerId(rs.getInt("organizer_id"));
-                event.setTitle(rs.getString("title"));
-                event.setDescription(rs.getString("description"));
-                event.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
-                event.setLocation(rs.getString("location"));
-                event.setCapacity(rs.getInt("capacity"));
-                event.setPrice(rs.getDouble("price"));
-                event.setVirtual(rs.getBoolean("is_virtual"));
-                return event;
+                return mapEvent(rs);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,7 +79,7 @@ public class EventDAO {
     }
 
     public boolean save(Event event) {
-        String sql = "INSERT INTO events (title, description, date_time, location, capacity, price, is_virtual, organizer_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO events (title, description, date_time, location, capacity, price, is_virtual, organizer_id, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             Class.forName("org.postgresql.Driver");
@@ -76,6 +91,7 @@ public class EventDAO {
             stmt.setDouble(6, event.getPrice());
             stmt.setBoolean(7, event.isVirtual());
             stmt.setInt(8, event.getOrganizerId());
+            stmt.setString(9, event.getCategory());
             stmt.executeUpdate();
             return true;
         } catch (Exception e) {
@@ -85,7 +101,7 @@ public class EventDAO {
     }
 
     public boolean update(Event event) {
-        String sql = "UPDATE events SET title = ?, description = ?, date_time = ?, location = ?, capacity = ?, price = ?, is_virtual = ? WHERE id = ?";
+        String sql = "UPDATE events SET title = ?, description = ?, date_time = ?, location = ?, capacity = ?, price = ?, is_virtual = ?, category = ? WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             Class.forName("org.postgresql.Driver");
@@ -96,7 +112,8 @@ public class EventDAO {
             stmt.setInt(5, event.getCapacity());
             stmt.setDouble(6, event.getPrice());
             stmt.setBoolean(7, event.isVirtual());
-            stmt.setInt(8, event.getId());
+            stmt.setString(8, event.getCategory());
+            stmt.setInt(9, event.getId());
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -115,5 +132,20 @@ public class EventDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    private Event mapEvent(ResultSet rs) throws SQLException {
+        Event event = new Event();
+        event.setId(rs.getInt("id"));
+        event.setOrganizerId(rs.getInt("organizer_id"));
+        event.setTitle(rs.getString("title"));
+        event.setDescription(rs.getString("description"));
+        event.setDateTime(rs.getTimestamp("date_time").toLocalDateTime());
+        event.setLocation(rs.getString("location"));
+        event.setCapacity(rs.getInt("capacity"));
+        event.setPrice(rs.getDouble("price"));
+        event.setVirtual(rs.getBoolean("is_virtual"));
+        event.setCategory(rs.getString("category"));
+        return event;
     }
 }
