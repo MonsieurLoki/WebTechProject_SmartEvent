@@ -117,6 +117,7 @@
                             <th>Registrations</th>
                             <th>Revenue</th>
                             <th>Rating</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -170,6 +171,13 @@
                                             <span class="text-muted small">No ratings</span>
                                         </c:otherwise>
                                     </c:choose>
+                                </td>
+                                <td class="align-middle">
+                                    <a href="/WebTechProject/organizer/events/${s.id}/attendees"
+                                       class="btn btn-sm"
+                                       style="background:#f1f5f9; color:#334155; border:none; font-weight:500;">
+                                        <i class="bi bi-people me-1"></i>Attendees
+                                    </a>
                                 </td>
                             </tr>
                         </c:forEach>
