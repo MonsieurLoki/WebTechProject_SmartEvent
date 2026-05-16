@@ -100,6 +100,40 @@ public class EventDAO {
         }
     }
 
+    public boolean update(Event event) {
+        String sql = "UPDATE events SET title = ?, description = ?, date_time = ?, location = ?, capacity = ?, price = ?, is_virtual = ?, category = ? WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            Class.forName("org.postgresql.Driver");
+            stmt.setString(1, event.getTitle());
+            stmt.setString(2, event.getDescription());
+            stmt.setTimestamp(3, Timestamp.valueOf(event.getDateTime()));
+            stmt.setString(4, event.getLocation());
+            stmt.setInt(5, event.getCapacity());
+            stmt.setDouble(6, event.getPrice());
+            stmt.setBoolean(7, event.isVirtual());
+            stmt.setString(8, event.getCategory());
+            stmt.setInt(9, event.getId());
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean deleteById(int id) {
+        String sql = "DELETE FROM events WHERE id = ?";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            Class.forName("org.postgresql.Driver");
+            stmt.setInt(1, id);
+            return stmt.executeUpdate() > 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private Event mapEvent(ResultSet rs) throws SQLException {
         Event event = new Event();
         event.setId(rs.getInt("id"));

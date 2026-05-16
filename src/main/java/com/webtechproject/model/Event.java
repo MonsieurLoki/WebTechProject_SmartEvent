@@ -40,6 +40,9 @@ public class Event {
     public LocalDateTime getDateTime() { return dateTime; }
     public void setDateTime(LocalDateTime dateTime) { this.dateTime = dateTime; }
     public String getFormattedDateTime() { return dateTime == null ? "" : dateTime.format(DISPLAY_FORMATTER); }
+    public String getDateTimeLocal() {
+        return dateTime == null ? "" : dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm"));
+    }
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
     public int getCapacity() { return capacity; }

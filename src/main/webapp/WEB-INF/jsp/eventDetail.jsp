@@ -34,7 +34,17 @@
     </c:if>
 
     <div class="card p-4 shadow-sm">
-        <h1 class="mb-1">${event.title}</h1>
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
+            <h1 class="mb-1">${event.title}</h1>
+            <c:if test="${not empty sessionScope.user && (sessionScope.user.role == 'ADMIN' || (sessionScope.user.role == 'ORGANIZER' && event.organizerId == sessionScope.user.id))}">
+                <div class="btn-group">
+                    <a href="/WebTechProject/events/${event.id}/edit" class="btn btn-outline-primary btn-sm">Edit</a>
+                    <form method="post" action="/WebTechProject/events/${event.id}/delete" class="mb-0" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                    </form>
+                </div>
+            </c:if>
+        </div>
         <p class="text-muted mb-3">${event.description}</p>
         <hr>
         <p><i class="bi bi-calendar3 me-2 text-primary"></i><strong>Date:</strong> ${event.formattedDateTime}</p>
