@@ -148,6 +148,7 @@ public String createEventPage(HttpSession session, Model model) {
         if (event == null) return "redirect:/events";
         if (!isEventOwnerOrAdmin(event, user)) return "redirect:/events";
         model.addAttribute("event", event);
+        model.addAttribute("categories", CATEGORIES);
         return "editEvent";
     }
 
@@ -159,6 +160,7 @@ public String createEventPage(HttpSession session, Model model) {
                             @RequestParam("location") String location,
                             @RequestParam("capacity") int capacity,
                             @RequestParam("price") double price,
+                            @RequestParam(value = "category", defaultValue = "General") String category,
                             @RequestParam(value = "isVirtual", defaultValue = "false") boolean isVirtual,
                             HttpSession session) {
         User user = (User) session.getAttribute("user");
@@ -174,6 +176,7 @@ public String createEventPage(HttpSession session, Model model) {
         event.setLocation(location);
         event.setCapacity(capacity);
         event.setPrice(price);
+        event.setCategory(category);
         event.setVirtual(isVirtual);
 
         eventDAO.update(event);

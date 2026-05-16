@@ -37,11 +37,18 @@
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
             <h1 class="mb-1">${event.title}</h1>
             <c:if test="${not empty sessionScope.user && (sessionScope.user.role == 'ADMIN' || (sessionScope.user.role == 'ORGANIZER' && event.organizerId == sessionScope.user.id))}">
-                <div class="btn-group">
-                    <a href="/WebTechProject/events/${event.id}/edit" class="btn btn-outline-primary btn-sm">Edit</a>
-                    <form method="post" action="/WebTechProject/events/${event.id}/delete" class="mb-0" onsubmit="return confirm('Are you sure you want to delete this event?');">
-                        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
-                    </form>
+                <div class="d-flex gap-2">
+                    <a href="/WebTechProject/events/${event.id}/edit"
+                       class="btn btn-sm d-flex align-items-center gap-1"
+                       style="background:#f1f5f9; color:#334155; border:none; font-weight:500;">
+                        <i class="bi bi-pencil"></i> Edit
+                    </a>
+                    <button type="button"
+                            class="btn btn-sm d-flex align-items-center gap-1"
+                            style="background:#fee2e2; color:#991b1b; border:none; font-weight:500;"
+                            data-bs-toggle="modal" data-bs-target="#deleteModal">
+                        <i class="bi bi-trash3"></i> Delete
+                    </button>
                 </div>
             </c:if>
         </div>
@@ -168,6 +175,28 @@
         </div>
     </div>
 </div>
+<div class="modal fade" id="deleteModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold"><i class="bi bi-exclamation-triangle text-danger me-2"></i>Delete event</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-muted">
+                Are you sure you want to delete <strong>${event.title}</strong>? This action cannot be undone.
+            </div>
+            <div class="modal-footer border-0 pt-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form method="post" action="/WebTechProject/events/${event.id}/delete">
+                    <button type="submit" class="btn btn-danger">
+                        <i class="bi bi-trash3 me-1"></i>Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
