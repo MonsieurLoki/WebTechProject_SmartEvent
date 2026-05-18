@@ -1,5 +1,6 @@
 package com.webtechproject.controller;
 
+import com.webtechproject.dao.NotificationDAO;
 import com.webtechproject.dao.OrganizerRequestDAO;
 import com.webtechproject.model.OrganizerRequest;
 import com.webtechproject.model.User;
@@ -31,14 +32,26 @@ public class AdminController {
     @PostMapping("/approve/{userId}")
     public String approve(@PathVariable("userId") int userId, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/events";
-        new OrganizerRequestDAO().approve(userId);
+        if (new OrganizerRequestDAO().approve(userId)) {
+            new NotificationDAO().create(
+                    userId,
+                    "Your organizer request was approved. You can now create and manage events.",
+                    "SUCCESS",
+                    "/organizer/dashboard");
+        }
         return "redirect:/admin/dashboard";
     }
 
     @PostMapping("/reject/{userId}")
     public String reject(@PathVariable("userId") int userId, HttpSession session) {
         if (!isAdmin(session)) return "redirect:/events";
-        new OrganizerRequestDAO().reject(userId);
+        if (new OrganizerRequestDAO().reject(userId)) {
+            new NotificationDAO().create(
+                    userId,
+                    "Your organizer request was rejected. You can submit another request later.",
+                    "WARNING",
+                    "/request-organizer");
+        }
         return "redirect:/admin/dashboard";
     }
 
