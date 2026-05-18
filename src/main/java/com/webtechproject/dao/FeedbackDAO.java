@@ -108,6 +108,31 @@ public class FeedbackDAO {
         }
     }
 
+    public boolean canUserLeaveFeedback(int userId, int eventId) {
+        String sql = "SELECT 1 " +
+                     "FROM registrations r " +
+                     "JOIN events e ON r.event_id = e.id " +
+                     "JOIN users u ON r.user_id = u.id " +
+                     "LEFT JOIN feedback f ON f.user_id = r.user_id AND f.event_id = r.event_id " +
+                     "WHERE r.user_id = ? " +
+                     "AND r.event_id = ? " +
+                     "AND u.role = 'ATTENDEE' " +
+                     "AND r.status = 'CONFIRMED' " +
+                     "AND r.registered_at < e.date_time " +
+                     "AND e.date_time < CURRENT_TIMESTAMP " +
+                     "AND f.id IS NULL";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, eventId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     private Feedback mapFeedback(ResultSet rs) throws SQLException {
         Feedback feedback = new Feedback();
         feedback.setId(rs.getInt("id"));
