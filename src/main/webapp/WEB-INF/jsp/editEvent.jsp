@@ -39,6 +39,7 @@
                         </a>
                     </li>
                 </c:if>
+                <jsp:include page="/WEB-INF/jsp/fragments/notificationDropdown.jsp"/>
                 <li class="nav-item"><span class="nav-link text-muted">${sessionScope.user.fullName}</span></li>
                 <li class="nav-item"><a class="nav-link" href="/WebTechProject/logout">Logout</a></li>
             </ul>

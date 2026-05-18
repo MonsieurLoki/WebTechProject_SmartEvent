@@ -259,6 +259,7 @@ uri="jakarta.tags.core" %>
               </a>
             </li>
             </c:if>
+            <jsp:include page="/WEB-INF/jsp/fragments/notificationDropdown.jsp"/>
             <li class="nav-item">
               <span class="nav-link text-muted">${sessionScope.user.fullName}</span>
             </li>

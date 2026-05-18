@@ -2,6 +2,7 @@ package com.webtechproject.controller;
 
 import com.webtechproject.dao.EventDAO;
 import com.webtechproject.dao.FeedbackDAO;
+import com.webtechproject.dao.NotificationDAO;
 import com.webtechproject.dao.PaymentDAO;
 import com.webtechproject.dao.RegistrationDAO;
 import com.webtechproject.model.Event;
@@ -136,7 +137,17 @@ public String createEventPage(HttpSession session, Model model) {
         event.setCategory(category);
         event.setOrganizerId(organizer.getId());
         EventDAO eventDAO = new EventDAO();
-        eventDAO.save(event);
+        if (eventDAO.save(event)) {
+            NotificationDAO notificationDAO = new NotificationDAO();
+            notificationDAO.create(
+                    organizer.getId(),
+                    "Your event \"" + title + "\" was created successfully.",
+                    "SUCCESS",
+                    "/organizer/dashboard");
+            notificationDAO.createForAttendees(
+                    "New event available: \"" + title + "\".",
+                    "/events");
+        }
         return "redirect:/events";
     }
 
@@ -234,7 +245,20 @@ public String createEventPage(HttpSession session, Model model) {
         registration.setEventId(eventId);
         registration.setTicketType("STANDARD");
         registration.setPricePaid(0);
-        registrationDAO.save(registration);
+        int registrationId = registrationDAO.save(registration);
+        if (registrationId > 0) {
+            NotificationDAO notificationDAO = new NotificationDAO();
+            notificationDAO.create(
+                    user.getId(),
+                    "Your free ticket for \"" + event.getTitle() + "\" is confirmed.",
+                    "SUCCESS",
+                    "/my-tickets");
+            notificationDAO.create(
+                    event.getOrganizerId(),
+                    user.getFullName() + " registered for \"" + event.getTitle() + "\".",
+                    "INFO",
+                    "/organizer/events/" + eventId + "/attendees");
+        }
 
         return "redirect:/my-tickets";
     }
@@ -288,6 +312,17 @@ public String createEventPage(HttpSession session, Model model) {
 
         if (registrationId > 0) {
             new PaymentDAO().save(registrationId, event.getPrice());
+            NotificationDAO notificationDAO = new NotificationDAO();
+            notificationDAO.create(
+                    user.getId(),
+                    "Payment confirmed. Your ticket for \"" + event.getTitle() + "\" is ready.",
+                    "SUCCESS",
+                    "/my-tickets");
+            notificationDAO.create(
+                    event.getOrganizerId(),
+                    user.getFullName() + " registered and paid for \"" + event.getTitle() + "\".",
+                    "INFO",
+                    "/organizer/events/" + eventId + "/attendees");
         }
 
         return "redirect:/my-tickets?success=payment";

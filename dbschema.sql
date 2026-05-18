@@ -115,15 +115,17 @@ CREATE TABLE payments (
     ON DELETE CASCADE
 );
 
-CREATE TABLE organizer_requests (
+CREATE TABLE notifications (
   id SERIAL PRIMARY KEY,
-  user_id INTEGER NOT NULL UNIQUE,
-  status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
-  requested_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  reviewed_at TIMESTAMP,
-  CONSTRAINT organizer_requests_status_chk
-    CHECK (status IN ('PENDING', 'APPROVED', 'REJECTED')),
-  CONSTRAINT organizer_requests_user_fk
+  user_id INTEGER NOT NULL,
+  message TEXT NOT NULL,
+  type VARCHAR(30) NOT NULL DEFAULT 'INFO',
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  link_url VARCHAR(255),
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT notifications_type_chk
+    CHECK (type IN ('INFO', 'SUCCESS', 'WARNING', 'ADMIN')),
+  CONSTRAINT notifications_user_fk
     FOREIGN KEY (user_id)
     REFERENCES users(id)
     ON UPDATE CASCADE
