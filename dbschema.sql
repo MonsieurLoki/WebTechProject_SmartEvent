@@ -131,3 +131,36 @@ CREATE TABLE notifications (
     ON UPDATE CASCADE
     ON DELETE CASCADE
 );
+
+CREATE TABLE event_messages (
+  id SERIAL PRIMARY KEY,
+  event_id INTEGER NOT NULL,
+  sender_id INTEGER NOT NULL,
+  receiver_id INTEGER NOT NULL,
+  parent_message_id INTEGER,
+  subject VARCHAR(150),
+  message TEXT NOT NULL,
+  is_read BOOLEAN NOT NULL DEFAULT FALSE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  read_at TIMESTAMP,
+  CONSTRAINT event_messages_event_fk
+    FOREIGN KEY (event_id)
+    REFERENCES events(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT event_messages_sender_fk
+    FOREIGN KEY (sender_id)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT event_messages_receiver_fk
+    FOREIGN KEY (receiver_id)
+    REFERENCES users(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT event_messages_parent_fk
+    FOREIGN KEY (parent_message_id)
+    REFERENCES event_messages(id)
+    ON UPDATE CASCADE
+    ON DELETE CASCADE
+);

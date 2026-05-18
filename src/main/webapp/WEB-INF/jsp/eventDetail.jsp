@@ -32,6 +32,18 @@
     <c:if test="${param.error == 'feedback_failed'}">
         <div class="alert alert-danger">Feedback could not be saved. Please try again.</div>
     </c:if>
+    <c:if test="${param.message == 'sent'}">
+        <div class="alert alert-success">Your message was sent to the organizer.</div>
+    </c:if>
+    <c:if test="${param.error == 'message_empty'}">
+        <div class="alert alert-danger">Message cannot be empty.</div>
+    </c:if>
+    <c:if test="${param.error == 'message_self'}">
+        <div class="alert alert-warning">You cannot send a message to yourself for this event.</div>
+    </c:if>
+    <c:if test="${param.error == 'message_failed'}">
+        <div class="alert alert-danger">Message could not be sent. Please try again.</div>
+    </c:if>
 
     <div class="card p-4 shadow-sm">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
@@ -96,7 +108,7 @@
         <div class="mt-2">
             <c:choose>
                 <c:when test="${sessionScope.user.role == 'ATTENDEE'}">
-                    <form method="post" action="/WebTechProject/events/${event.id}/register">
+                    <form method="post" action="/WebTechProject/events/${event.id}/register" class="d-inline-block me-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-ticket me-1"></i>Register for this event
                         </button>
@@ -106,7 +118,32 @@
                     <p class="text-muted fst-italic">Organizers cannot register for events.</p>
                 </c:when>
             </c:choose>
+            <c:if test="${not empty sessionScope.user && sessionScope.user.id != event.organizerId}">
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#messageOrganizerForm">
+                    <i class="bi bi-envelope me-1"></i>Message Organizer
+                </button>
+            </c:if>
         </div>
+
+        <c:if test="${not empty sessionScope.user && sessionScope.user.id != event.organizerId}">
+            <div class="collapse mt-3" id="messageOrganizerForm">
+                <div class="border rounded p-3 bg-light">
+                    <form method="post" action="/WebTechProject/events/${event.id}/messages">
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control" maxlength="150" placeholder="Question about this event"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea name="message" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i>Send message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </c:if>
 
         <c:if test="${eventFinished && sessionScope.user.role == 'ATTENDEE'}">
             <div class="border-top pt-4 mt-4">

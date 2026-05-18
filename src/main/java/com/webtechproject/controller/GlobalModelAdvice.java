@@ -2,6 +2,7 @@ package com.webtechproject.controller;
 
 import com.webtechproject.dao.OrganizerRequestDAO;
 import com.webtechproject.dao.NotificationDAO;
+import com.webtechproject.dao.EventMessageDAO;
 import com.webtechproject.model.User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -36,5 +37,14 @@ public class GlobalModelAdvice {
         User user = (User) session.getAttribute("user");
         if (user == null) return java.util.Collections.emptyList();
         return new NotificationDAO().findRecentByUserId(user.getId(), 5);
+    }
+
+    @ModelAttribute("unreadMessageCount")
+    public int unreadMessageCount(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null) return 0;
+        User user = (User) session.getAttribute("user");
+        if (user == null) return 0;
+        return new EventMessageDAO().countUnreadMessages(user.getId());
     }
 }
