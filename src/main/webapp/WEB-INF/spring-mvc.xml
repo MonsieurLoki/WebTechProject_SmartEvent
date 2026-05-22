@@ -25,6 +25,8 @@
       <mvc:mapping path="/my-tickets"/>
       <mvc:mapping path="/request-organizer"/>
       <mvc:mapping path="/notifications/**"/>
+      <mvc:mapping path="/messages"/>
+      <mvc:mapping path="/messages/**"/>
       <mvc:mapping path="/admin/**"/>
       <mvc:mapping path="/organizer/**"/>
       <bean class="com.webtechproject.interceptor.AuthInterceptor"/>

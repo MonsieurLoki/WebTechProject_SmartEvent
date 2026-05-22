@@ -11,7 +11,15 @@
     <ul class="dropdown-menu dropdown-menu-end shadow border-0 p-2" style="width:360px; border-radius:10px;">
         <li class="px-2 py-2 d-flex justify-content-between align-items-center">
             <span class="fw-semibold">Notifications</span>
-            <a class="small text-decoration-none" href="/WebTechProject/notifications">View all</a>
+            <span class="d-flex gap-2">
+                <a class="small text-decoration-none" href="/WebTechProject/messages">
+                    Messages
+                    <c:if test="${unreadMessageCount > 0}">
+                        <span class="badge bg-primary rounded-pill ms-1">${unreadMessageCount}</span>
+                    </c:if>
+                </a>
+                <a class="small text-decoration-none" href="/WebTechProject/notifications">View all</a>
+            </span>
         </li>
         <li><hr class="dropdown-divider"></li>
         <c:choose>

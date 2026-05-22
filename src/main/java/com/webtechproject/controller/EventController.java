@@ -52,15 +52,20 @@ public class EventController {
         if (event == null) return "redirect:/events";
 
         FeedbackDAO feedbackDAO = new FeedbackDAO();
+        RegistrationDAO registrationDAO = new RegistrationDAO();
         User user = (User) session.getAttribute("user");
 
         model.addAttribute("event", event);
         model.addAttribute("eventFinished", feedbackDAO.isEventFinished(id));
+        model.addAttribute("eventStarted", registrationDAO.hasEventStarted(id));
         model.addAttribute("averageRating", feedbackDAO.getAverageRatingByEventId(id));
         model.addAttribute("ratingCount", feedbackDAO.countByEventId(id));
         model.addAttribute("feedbackList", feedbackDAO.findByEventId(id));
         if (user != null) {
             model.addAttribute("userFeedback", feedbackDAO.findByUserAndEvent(user.getId(), id));
+            model.addAttribute("canLeaveFeedback", feedbackDAO.canUserLeaveFeedback(user.getId(), id));
+            model.addAttribute("confirmedRegistered", registrationDAO.isUserConfirmedRegisteredForEvent(user.getId(), id));
+            model.addAttribute("registeredBeforeEventStart", registrationDAO.isUserRegisteredBeforeEventStart(user.getId(), id));
         }
         return "eventDetail";
     }
@@ -72,7 +77,7 @@ public class EventController {
                                  HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
-        if (!"ATTENDEE".equals(user.getRole())) return "redirect:/events/" + eventId;
+        if (!"ATTENDEE".equals(user.getRole())) return "redirect:/events/" + eventId + "?error=feedback_role";
         if (rating < 1 || rating > 5) return "redirect:/events/" + eventId + "?error=invalid_rating";
 
         EventDAO eventDAO = new EventDAO();
@@ -85,6 +90,17 @@ public class EventController {
 
         if (feedbackDAO.findByUserAndEvent(user.getId(), eventId) != null) {
             return "redirect:/events/" + eventId + "?error=already_feedback";
+        }
+
+        RegistrationDAO registrationDAO = new RegistrationDAO();
+        if (!registrationDAO.isUserConfirmedRegisteredForEvent(user.getId(), eventId)) {
+            return "redirect:/events/" + eventId + "?error=feedback_not_registered";
+        }
+        if (!registrationDAO.isUserRegisteredBeforeEventStart(user.getId(), eventId)) {
+            return "redirect:/events/" + eventId + "?error=feedback_late_registration";
+        }
+        if (!feedbackDAO.canUserLeaveFeedback(user.getId(), eventId)) {
+            return "redirect:/events/" + eventId + "?error=feedback_not_allowed";
         }
 
         Feedback feedback = new Feedback();
@@ -217,8 +233,8 @@ public String createEventPage(HttpSession session, Model model) {
     public String registerForEvent(@PathVariable("id") int eventId, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
-        if ("ORGANIZER".equals(user.getRole()) || "ADMIN".equals(user.getRole())) {
-            return "redirect:/events/" + eventId;
+        if (!"ATTENDEE".equals(user.getRole())) {
+            return "redirect:/events/" + eventId + "?error=registration_role";
         }
 
         RegistrationDAO registrationDAO = new RegistrationDAO();
@@ -230,6 +246,9 @@ public String createEventPage(HttpSession session, Model model) {
 
         Event event = eventDAO.getEventById(eventId);
         if (event == null) return "redirect:/events";
+        if (registrationDAO.hasEventStarted(eventId)) {
+            return "redirect:/events/" + eventId + "?error=registration_closed";
+        }
 
         int registered = registrationDAO.countByEventId(eventId);
         if (registered >= event.getCapacity()) {
@@ -274,6 +293,9 @@ public String createEventPage(HttpSession session, Model model) {
         if (event == null || event.getPrice() == 0) return "redirect:/events";
 
         RegistrationDAO registrationDAO = new RegistrationDAO();
+        if (registrationDAO.hasEventStarted(eventId)) {
+            return "redirect:/events/" + eventId + "?error=registration_closed";
+        }
         if (registrationDAO.existsByUserAndEvent(user.getId(), eventId)) {
             return "redirect:/my-tickets";
         }
@@ -294,6 +316,9 @@ public String createEventPage(HttpSession session, Model model) {
         if (event == null) return "redirect:/events";
 
         RegistrationDAO registrationDAO = new RegistrationDAO();
+        if (registrationDAO.hasEventStarted(eventId)) {
+            return "redirect:/events/" + eventId + "?error=registration_closed";
+        }
         if (registrationDAO.existsByUserAndEvent(user.getId(), eventId)) {
             return "redirect:/my-tickets";
         }

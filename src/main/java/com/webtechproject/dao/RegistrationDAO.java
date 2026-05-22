@@ -53,6 +53,66 @@ public class RegistrationDAO {
         return 0;
     }
 
+    public boolean hasEventStarted(int eventId) {
+        String sql = "SELECT 1 FROM events WHERE id = ? AND date_time <= CURRENT_TIMESTAMP";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, eventId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean canUserRegisterForEvent(int userId, int eventId) {
+        String sql = "SELECT 1 FROM users u, events e " +
+                     "WHERE u.id = ? AND u.role = 'ATTENDEE' " +
+                     "AND e.id = ? AND e.date_time > CURRENT_TIMESTAMP " +
+                     "AND NOT EXISTS (SELECT 1 FROM registrations r WHERE r.user_id = u.id AND r.event_id = e.id)";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, eventId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isUserConfirmedRegisteredForEvent(int userId, int eventId) {
+        String sql = "SELECT 1 FROM registrations WHERE user_id = ? AND event_id = ? AND status = 'CONFIRMED'";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, eventId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean isUserRegisteredBeforeEventStart(int userId, int eventId) {
+        String sql = "SELECT 1 FROM registrations r JOIN events e ON r.event_id = e.id " +
+                     "WHERE r.user_id = ? AND r.event_id = ? " +
+                     "AND r.status = 'CONFIRMED' AND r.registered_at < e.date_time";
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.setInt(2, eventId);
+            ResultSet rs = stmt.executeQuery();
+            return rs.next();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     public List<Registration> findByUserId(int userId) {
         List<Registration> registrations = new ArrayList<>();
         String sql = "SELECT r.id, r.user_id, r.event_id, r.ticket_type, r.price_paid, r.status, r.registered_at, " +

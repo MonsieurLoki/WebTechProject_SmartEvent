@@ -20,6 +20,12 @@
     <c:if test="${param.error == 'full'}">
         <div class="alert alert-danger">This event is full.</div>
     </c:if>
+    <c:if test="${param.error == 'registration_closed'}">
+        <div class="alert alert-warning">Registration is closed because this event has already started.</div>
+    </c:if>
+    <c:if test="${param.error == 'registration_role'}">
+        <div class="alert alert-warning">Only attendees can register for events.</div>
+    </c:if>
     <c:if test="${param.error == 'invalid_rating'}">
         <div class="alert alert-danger">Rating must be between 1 and 5.</div>
     </c:if>
@@ -31,6 +37,30 @@
     </c:if>
     <c:if test="${param.error == 'feedback_failed'}">
         <div class="alert alert-danger">Feedback could not be saved. Please try again.</div>
+    </c:if>
+    <c:if test="${param.error == 'feedback_role'}">
+        <div class="alert alert-warning">Organizers and admins cannot leave feedback.</div>
+    </c:if>
+    <c:if test="${param.error == 'feedback_not_registered'}">
+        <div class="alert alert-warning">Only registered attendees can leave feedback.</div>
+    </c:if>
+    <c:if test="${param.error == 'feedback_late_registration'}">
+        <div class="alert alert-warning">You must have registered before the event started to leave feedback.</div>
+    </c:if>
+    <c:if test="${param.error == 'feedback_not_allowed'}">
+        <div class="alert alert-warning">You are not allowed to leave feedback for this event.</div>
+    </c:if>
+    <c:if test="${param.message == 'sent'}">
+        <div class="alert alert-success">Your message was sent to the organizer.</div>
+    </c:if>
+    <c:if test="${param.error == 'message_empty'}">
+        <div class="alert alert-danger">Message cannot be empty.</div>
+    </c:if>
+    <c:if test="${param.error == 'message_self'}">
+        <div class="alert alert-warning">You cannot send a message to yourself for this event.</div>
+    </c:if>
+    <c:if test="${param.error == 'message_failed'}">
+        <div class="alert alert-danger">Message could not be sent. Please try again.</div>
     </c:if>
 
     <div class="card p-4 shadow-sm">
@@ -96,22 +126,60 @@
         <div class="mt-2">
             <c:choose>
                 <c:when test="${sessionScope.user.role == 'ATTENDEE'}">
-                    <form method="post" action="/WebTechProject/events/${event.id}/register">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-ticket me-1"></i>Register for this event
-                        </button>
-                    </form>
+                    <c:choose>
+                        <c:when test="${eventStarted}">
+                            <p class="text-muted fst-italic">Registration is closed because this event has already started.</p>
+                        </c:when>
+                        <c:otherwise>
+                            <form method="post" action="/WebTechProject/events/${event.id}/register" class="d-inline-block me-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-ticket me-1"></i>Register for this event
+                                </button>
+                            </form>
+                        </c:otherwise>
+                    </c:choose>
                 </c:when>
                 <c:when test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
-                    <p class="text-muted fst-italic">Organizers cannot register for events.</p>
+                    <p class="text-muted fst-italic">Organizers and admins cannot register for events.</p>
                 </c:when>
             </c:choose>
+            <c:if test="${not empty sessionScope.user && sessionScope.user.id != event.organizerId}">
+                <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#messageOrganizerForm">
+                    <i class="bi bi-envelope me-1"></i>Message Organizer
+                </button>
+            </c:if>
         </div>
 
-        <c:if test="${eventFinished && sessionScope.user.role == 'ATTENDEE'}">
+        <c:if test="${not empty sessionScope.user && sessionScope.user.id != event.organizerId}">
+            <div class="collapse mt-3" id="messageOrganizerForm">
+                <div class="border rounded p-3 bg-light">
+                    <form method="post" action="/WebTechProject/events/${event.id}/messages">
+                        <div class="mb-3">
+                            <label class="form-label">Subject</label>
+                            <input type="text" name="subject" class="form-control" maxlength="150" placeholder="Question about this event"/>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea name="message" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i>Send message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </c:if>
+
+        <c:if test="${eventFinished}">
             <div class="border-top pt-4 mt-4">
                 <h5 class="mb-3"><i class="bi bi-chat-left-text me-1"></i>Your feedback</h5>
                 <c:choose>
+                    <c:when test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
+                        <p class="text-muted mb-0">Organizers and admins cannot leave feedback.</p>
+                    </c:when>
+                    <c:when test="${sessionScope.user.role != 'ATTENDEE'}">
+                        <p class="text-muted mb-0">Only registered attendees can leave feedback.</p>
+                    </c:when>
                     <c:when test="${not empty userFeedback}">
                         <div class="alert alert-success mb-0">
                             <strong>You rated this event ${userFeedback.rating}/5.</strong>
@@ -120,7 +188,7 @@
                             </c:if>
                         </div>
                     </c:when>
-                    <c:otherwise>
+                    <c:when test="${canLeaveFeedback}">
                         <form method="post" action="/WebTechProject/events/${event.id}/feedback">
                             <div class="mb-3">
                                 <label for="rating" class="form-label">Rating</label>
@@ -140,6 +208,15 @@
                                 <i class="bi bi-send me-1"></i>Submit feedback
                             </button>
                         </form>
+                    </c:when>
+                    <c:when test="${!confirmedRegistered}">
+                        <p class="text-muted mb-0">Only registered attendees can leave feedback.</p>
+                    </c:when>
+                    <c:when test="${!registeredBeforeEventStart}">
+                        <p class="text-muted mb-0">You must have registered before the event started to leave feedback.</p>
+                    </c:when>
+                    <c:otherwise>
+                        <p class="text-muted mb-0">You are not allowed to leave feedback for this event.</p>
                     </c:otherwise>
                 </c:choose>
             </div>
