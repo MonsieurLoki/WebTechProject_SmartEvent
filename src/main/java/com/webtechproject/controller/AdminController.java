@@ -1,5 +1,7 @@
 package com.webtechproject.controller;
 
+import com.webtechproject.dao.AdminDAO;
+import com.webtechproject.dao.EventDAO;
 import com.webtechproject.dao.NotificationDAO;
 import com.webtechproject.dao.OrganizerRequestDAO;
 import com.webtechproject.model.OrganizerRequest;
@@ -23,9 +25,15 @@ public class AdminController {
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         if (!isAdmin(session)) return "redirect:/events";
-        OrganizerRequestDAO dao = new OrganizerRequestDAO();
-        List<OrganizerRequest> requests = dao.findPending();
-        model.addAttribute("requests", requests);
+
+        AdminDAO adminDAO = new AdminDAO();
+        model.addAttribute("requests", new OrganizerRequestDAO().findPending());
+        model.addAttribute("totalUsers", adminDAO.countUsers());
+        model.addAttribute("totalOrganizers", adminDAO.countOrganizers());
+        model.addAttribute("totalEvents", adminDAO.countEvents());
+        model.addAttribute("totalRegistrations", adminDAO.countRegistrations());
+        model.addAttribute("organizers", adminDAO.getAllOrganizers());
+        model.addAttribute("allEvents", adminDAO.getAllEvents());
         return "adminDashboard";
     }
 
@@ -52,6 +60,26 @@ public class AdminController {
                     "WARNING",
                     "/request-organizer");
         }
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/revoke/{userId}")
+    public String revokeOrganizer(@PathVariable("userId") int userId, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/events";
+        if (new AdminDAO().revokeOrganizer(userId)) {
+            new NotificationDAO().create(
+                    userId,
+                    "Your organizer privileges have been revoked by an administrator.",
+                    "WARNING",
+                    "/events");
+        }
+        return "redirect:/admin/dashboard";
+    }
+
+    @PostMapping("/events/{eventId}/delete")
+    public String deleteEvent(@PathVariable("eventId") int eventId, HttpSession session) {
+        if (!isAdmin(session)) return "redirect:/events";
+        new EventDAO().deleteById(eventId);
         return "redirect:/admin/dashboard";
     }
 

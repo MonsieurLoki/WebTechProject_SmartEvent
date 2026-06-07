@@ -24,9 +24,9 @@ public class OrganizerController {
     @GetMapping("/dashboard")
     public String dashboard(HttpSession session, Model model) {
         User user = (User) session.getAttribute("user");
-        if (user == null || (!"ORGANIZER".equals(user.getRole()) && !"ADMIN".equals(user.getRole()))) {
-            return "redirect:/events";
-        }
+        if (user == null) return "redirect:/events";
+        if ("ADMIN".equals(user.getRole())) return "redirect:/admin/dashboard";
+        if (!"ORGANIZER".equals(user.getRole())) return "redirect:/events";
 
         OrganizerDashboardDAO dao = new OrganizerDashboardDAO();
         List<EventStats> stats = dao.getEventStats(user.getId());

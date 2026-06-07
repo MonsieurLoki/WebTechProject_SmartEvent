@@ -68,11 +68,13 @@
             <h1 class="mb-1">${event.title}</h1>
             <c:if test="${not empty sessionScope.user && (sessionScope.user.role == 'ADMIN' || (sessionScope.user.role == 'ORGANIZER' && event.organizerId == sessionScope.user.id))}">
                 <div class="d-flex gap-2">
-                    <a href="/WebTechProject/events/${event.id}/edit"
-                       class="btn btn-sm d-flex align-items-center gap-1"
-                       style="background:#f1f5f9; color:#334155; border:none; font-weight:500;">
-                        <i class="bi bi-pencil"></i> Edit
-                    </a>
+                    <c:if test="${sessionScope.user.role == 'ORGANIZER' && event.organizerId == sessionScope.user.id}">
+                        <a href="/WebTechProject/events/${event.id}/edit"
+                           class="btn btn-sm d-flex align-items-center gap-1"
+                           style="background:#f1f5f9; color:#334155; border:none; font-weight:500;">
+                            <i class="bi bi-pencil"></i> Edit
+                        </a>
+                    </c:if>
                     <button type="button"
                             class="btn btn-sm d-flex align-items-center gap-1"
                             style="background:#fee2e2; color:#991b1b; border:none; font-weight:500;"
@@ -143,14 +145,14 @@
                     <p class="text-muted fst-italic">Organizers and admins cannot register for events.</p>
                 </c:when>
             </c:choose>
-            <c:if test="${not empty sessionScope.user && sessionScope.user.id != event.organizerId}">
+            <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
                 <button class="btn btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#messageOrganizerForm">
                     <i class="bi bi-envelope me-1"></i>Message Organizer
                 </button>
             </c:if>
         </div>
 
-        <c:if test="${not empty sessionScope.user && sessionScope.user.id != event.organizerId}">
+        <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
             <div class="collapse mt-3" id="messageOrganizerForm">
                 <div class="border rounded p-3 bg-light">
                     <form method="post" action="/WebTechProject/events/${event.id}/messages">

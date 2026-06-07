@@ -34,8 +34,10 @@
                 <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
                     <li class="nav-item"><a class="nav-link active" href="/WebTechProject/my-tickets">My Tickets</a></li>
                 </c:if>
-                <c:if test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
+                <c:if test="${sessionScope.user.role == 'ORGANIZER'}">
                     <li class="nav-item"><a class="nav-link" href="/WebTechProject/organizer/dashboard">My Dashboard</a></li>
+                </c:if>
+                <c:if test="${sessionScope.user.role == 'ORGANIZER' || sessionScope.user.role == 'ADMIN'}">
                     <li class="nav-item"><a class="nav-link" href="/WebTechProject/events/create">Create Event</a></li>
                 </c:if>
                 <c:if test="${sessionScope.user.role == 'ATTENDEE'}">
