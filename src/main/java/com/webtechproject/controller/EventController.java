@@ -136,6 +136,7 @@ public String createEventPage(HttpSession session, Model model) {
                             @RequestParam("price") double price,
                             @RequestParam(value = "category", defaultValue = "General") String category,
                             @RequestParam(value = "isVirtual", defaultValue = "false") boolean isVirtual,
+                            @RequestParam(value = "imageUrl", required = false) String imageUrl,
                             HttpSession session) {
         User organizer = (User) session.getAttribute("user");
         if (organizer == null) return "redirect:/login";
@@ -151,6 +152,7 @@ public String createEventPage(HttpSession session, Model model) {
         event.setPrice(price);
         event.setVirtual(isVirtual);
         event.setCategory(category);
+        event.setImageUrl(imageUrl != null && !imageUrl.trim().isEmpty() ? imageUrl.trim() : null);
         event.setOrganizerId(organizer.getId());
         EventDAO eventDAO = new EventDAO();
         if (eventDAO.save(event)) {
@@ -190,6 +192,7 @@ public String createEventPage(HttpSession session, Model model) {
                             @RequestParam("price") double price,
                             @RequestParam(value = "category", defaultValue = "General") String category,
                             @RequestParam(value = "isVirtual", defaultValue = "false") boolean isVirtual,
+                            @RequestParam(value = "imageUrl", required = false) String imageUrl,
                             HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) return "redirect:/login";
@@ -206,6 +209,7 @@ public String createEventPage(HttpSession session, Model model) {
         event.setPrice(price);
         event.setCategory(category);
         event.setVirtual(isVirtual);
+        event.setImageUrl(imageUrl != null && !imageUrl.trim().isEmpty() ? imageUrl.trim() : null);
 
         eventDAO.update(event);
         return "redirect:/events/" + eventId;

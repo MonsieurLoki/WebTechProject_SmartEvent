@@ -336,10 +336,21 @@ uri="jakarta.tags.core" %>
               <c:forEach var="event" items="${events}">
             <div class="col-md-4">
               <div class="event-card card">
-                <!-- Image placeholder avec icône -->
-                <div class="event-card-img">
-                  <i class="bi bi-calendar-event"></i>
-                </div>
+                <c:choose>
+                  <c:when test="${not empty event.imageUrl}">
+                    <img src="${event.imageUrl}" alt="${event.title}"
+                         style="height:180px; width:100%; object-fit:cover;"
+                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'"/>
+                    <div class="event-card-img" style="display:none">
+                      <i class="bi bi-calendar-event"></i>
+                    </div>
+                  </c:when>
+                  <c:otherwise>
+                    <div class="event-card-img">
+                      <i class="bi bi-calendar-event"></i>
+                    </div>
+                  </c:otherwise>
+                </c:choose>
                 <div class="card-body">
                   <!-- Badge Virtual / In-person -->
                   <span

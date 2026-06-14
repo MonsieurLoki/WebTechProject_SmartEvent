@@ -51,6 +51,11 @@
             <input type="checkbox" name="isVirtual" class="form-check-input" id="isVirtual"/>
             <label class="form-check-label" for="isVirtual">Virtual event</label>
         </div>
+        <div class="mb-3">
+            <label>Image URL (optional)</label>
+            <input type="url" name="imageUrl" class="form-control" placeholder="https://example.com/image.jpg"/>
+            <div class="form-text">Paste a link to an image from the web.</div>
+        </div>
         <button type="submit" class="btn btn-primary w-100">Create Event</button>
     </form>
 </div>

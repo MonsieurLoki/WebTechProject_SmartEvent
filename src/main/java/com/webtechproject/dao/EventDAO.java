@@ -79,7 +79,7 @@ public class EventDAO {
     }
 
     public boolean save(Event event) {
-        String sql = "INSERT INTO events (title, description, date_time, location, capacity, price, is_virtual, organizer_id, category) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO events (title, description, date_time, location, capacity, price, is_virtual, organizer_id, category, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)) {
             Class.forName("org.postgresql.Driver");
@@ -92,6 +92,7 @@ public class EventDAO {
             stmt.setBoolean(7, event.isVirtual());
             stmt.setInt(8, event.getOrganizerId());
             stmt.setString(9, event.getCategory());
+            stmt.setString(10, event.getImageUrl());
             stmt.executeUpdate();
             return true;
         } catch (Exception e) {
@@ -101,7 +102,7 @@ public class EventDAO {
     }
 
     public boolean update(Event event) {
-        String sql = "UPDATE events SET title = ?, description = ?, date_time = ?, location = ?, capacity = ?, price = ?, is_virtual = ?, category = ? WHERE id = ?";
+        String sql = "UPDATE events SET title = ?, description = ?, date_time = ?, location = ?, capacity = ?, price = ?, is_virtual = ?, category = ?, image_url = ? WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             Class.forName("org.postgresql.Driver");
@@ -113,7 +114,8 @@ public class EventDAO {
             stmt.setDouble(6, event.getPrice());
             stmt.setBoolean(7, event.isVirtual());
             stmt.setString(8, event.getCategory());
-            stmt.setInt(9, event.getId());
+            stmt.setString(9, event.getImageUrl());
+            stmt.setInt(10, event.getId());
             return stmt.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -146,6 +148,7 @@ public class EventDAO {
         event.setPrice(rs.getDouble("price"));
         event.setVirtual(rs.getBoolean("is_virtual"));
         event.setCategory(rs.getString("category"));
+        event.setImageUrl(rs.getString("image_url"));
         return event;
     }
 }

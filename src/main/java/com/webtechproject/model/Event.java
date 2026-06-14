@@ -15,6 +15,7 @@ public class Event {
     private double price;
     private boolean isVirtual;
     private String category;
+    private String imageUrl;
 
     public Event() {}
 
@@ -53,6 +54,8 @@ public class Event {
     public void setVirtual(boolean isVirtual) { this.isVirtual = isVirtual; }
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
+    public String getImageUrl() { return imageUrl; }
+    public void setImageUrl(String imageUrl) { this.imageUrl = imageUrl; }
     private int organizerId;
     public int getOrganizerId() { return organizerId; }
     public void setOrganizerId(int organizerId) { this.organizerId = organizerId; }

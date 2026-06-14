@@ -93,9 +93,14 @@
                     </select>
                 </div>
             </div>
-            <div class="mb-4 form-check">
+            <div class="mb-3 form-check">
                 <input type="checkbox" name="isVirtual" class="form-check-input" id="isVirtual" <c:if test="${event.virtual}">checked</c:if>/>
                 <label class="form-check-label" for="isVirtual">Virtual event</label>
+            </div>
+            <div class="mb-4">
+                <label class="form-label fw-semibold">Image URL (optional)</label>
+                <input type="url" name="imageUrl" class="form-control" value="${event.imageUrl}" placeholder="https://example.com/image.jpg"/>
+                <div class="form-text">Paste a link to an image from the web.</div>
             </div>
             <div class="d-flex gap-2">
                 <button type="submit" class="btn btn-primary flex-grow-1">
