@@ -1,5 +1,5 @@
 # SmartEvent — Final Project Report
-**Web Technologies — II.2306/II.2406 | ISEP Paris | 2025–2026**
+**Web Technologies — II.2406 | ISEP Paris | 2025–2026**
 
 **Team members:** Gaspard Derruine, Ayoub Ayoubi, Pedro Alemparte, Leopold Thomasset, Noé Capouet
 
@@ -132,7 +132,15 @@ Supports a threaded messaging system between attendees and event organizers. `pa
 
 ### Planning
 
-[TODO]
+The project was divided into three milestones, each with a fixed deadline set by the course instructors.
+
+| Milestone | Deadline | Scope |
+|---|---|---|
+| Milestone 1 | March 30, 2026 | Project setup, database connection, authentication, event browsing |
+| Milestone 2 | May 10, 2026 | Core features: registration, payment, organizer dashboard, feedback, notifications, messaging |
+| Milestone 3 | May 17, 2026 | Admin dashboard, permission refinements, final polish and deployment |
+
+Work was distributed among team members at the start of each milestone. We used a Git feature-branch workflow, each feature was developed in a dedicated branch and merged into `main` via a pull request.
 
 ### Releases
 
