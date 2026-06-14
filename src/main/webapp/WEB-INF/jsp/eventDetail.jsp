@@ -63,7 +63,13 @@
         <div class="alert alert-danger">Message could not be sent. Please try again.</div>
     </c:if>
 
-    <div class="card p-4 shadow-sm">
+    <div class="card shadow-sm" style="overflow:hidden">
+        <c:if test="${not empty event.imageUrl}">
+            <img src="${event.imageUrl}" alt="${event.title}"
+                 style="width:100%; max-height:320px; object-fit:cover;"
+                 onerror="this.style.display='none'"/>
+        </c:if>
+        <div class="p-4">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start gap-3 mb-3">
             <h1 class="mb-1">${event.title}</h1>
             <c:if test="${not empty sessionScope.user && (sessionScope.user.role == 'ADMIN' || (sessionScope.user.role == 'ORGANIZER' && event.organizerId == sessionScope.user.id))}">
@@ -253,7 +259,7 @@
             </c:choose>
         </div>
     </div>
-</div>
+</div></div>
 <div class="modal fade" id="deleteModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
