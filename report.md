@@ -154,13 +154,11 @@ The project was developed incrementally using Git with a feature-branch workflow
 
 ### Team Members' Roles
 
-[TODO — add your work here if something is missing]
-
 - **Gaspard Derruine** — Project coordination, event registration flow, simulated payment, organizer dashboard, admin dashboard improvements, overall integration
 - **Pedro Alemparte** — Search and category filters, feedback & ratings system, permission enforcement (registration/feedback rules), attendee-to-organizer messaging
 - **Ayoub Ayoubi** — Notification system (backend, frontend, database)
 - **Leopold Thomasset** — Edit and delete event feature
-- **Noé Capouet** — [TODO]
+- **Noé Capouet** — Mock-up design and general contribution to the project
 
 ---
 
