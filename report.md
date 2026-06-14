@@ -144,8 +144,6 @@ Work was distributed among team members at the start of each milestone. We used 
 
 ### Releases
 
-The project was developed incrementally using Git with a feature-branch workflow. Each feature was developed on a dedicated branch and merged into `main` via a pull request. The main releases were:
-
 | Release | Features included |
 |---|---|
 | Milestone 1 | Project setup, PostgreSQL connection, user authentication, event list and detail pages |
